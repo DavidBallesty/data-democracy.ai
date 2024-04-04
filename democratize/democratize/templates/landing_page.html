@@ -3,11 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>data-democracy.ai</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Include any additional CSS files here -->
+    <!-- Include libraries like Three.js or Globe.js here -->
 </head>
 <body>
-    <h1>data-democracy.ai</h1>
-    <button onclick="location.href='{% url 'auto_analyze' %}'">Auto-Analyze Data</button>
-    <button onclick="location.href='{% url 'scan_websites' %}'">Scan Websites with Keywords</button>
-    <button onclick="location.href='{% url 'scan_images' %}'">Scan Images for Text</button>
+    <header>
+        <!-- Horizontal text navigation -->
+        <nav id="horizontal-nav">
+            <!-- Placeholder for dynamic text animation -->
+            <!-- Use JavaScript to animate these texts -->
+            <div>Auto Analyze</div>
+            <div>Scan Websites</div>
+            <div>Scan Images</div>
+            <div>About</div>
+            <div>Contact</div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Placeholder for interactive globe with dots -->
+        <!-- This will be replaced with the actual globe rendering -->
+        <div id="globe-container">
+            <!-- Placeholder for globe rendering script -->
+        </div>
+
+        <!-- Placeholder for metallic buttons -->
+        <div id="button-container">
+            <button id="btn-auto-analyze" onclick="location.href='{% url 'auto_analyze' %}'">Auto-Analyze Data</button>
+            <button id="btn-scan-websites" onclick="location.href='{% url 'scan_websites' %}'">Scan Websites with Keywords</button>
+            <button id="btn-scan-images" onclick="location.href='{% url 'scan_images' %}'">Scan Images for Text</button>
+        </div>
+    </main>
+
+    <footer>
+        <!-- Language selection -->
+        <div id="language-selector">
+            <!-- Buttons or links to switch languages -->
+            <!-- Placeholder for language switch script -->
+        </div>
+    </footer>
+
+    <!-- Placeholder for JavaScript animations and interactions -->
+    <script src="scripts.js"></script>
 </body>
 </html>
