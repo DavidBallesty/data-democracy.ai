@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static  %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -30,9 +31,9 @@
 
         <!-- Placeholder for metallic buttons -->
         <div id="button-container">
-            <button id="btn-auto-analyze" onclick="location.href='{% url 'auto_analyze' %}'">Auto-Analyze Data</button>
-            <button id="btn-scan-websites" onclick="location.href='{% url 'scan_websites' %}'">Scan Websites with Keywords</button>
-            <button id="btn-scan-images" onclick="location.href='{% url 'scan_images' %}'">Scan Images for Text</button>
+            <button id="btn-auto-analyze">Auto-Analyze Data</button>
+            <button id="btn-scan-websites">Scan Websites with Keywords</button>
+            <button id="btn-scan-images">Scan Images for Text</button>
         </div>
     </main>
 
@@ -45,6 +46,11 @@
     </footer>
 
     <!-- Placeholder for JavaScript animations and interactions -->
-    <script src="scripts.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <!-- Include Three.js for 3D globe rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Reference to the globe initialization script -->
+    <script src="{% static 'js/globe.js' %}"></script>
+
 </body>
 </html>

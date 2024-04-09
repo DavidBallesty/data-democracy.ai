@@ -24,4 +24,5 @@ urlpatterns = [
     path('auto_analyze/', views.auto_analyze, name='auto_analyze'),
     path('scan_websites/', views.scan_websites, name='scan_websites'),
     path('scan_images/', views.scan_images, name='scan_images'),
+    path('get_globe_data/', views.get_globe_data, name='get_globe_data'),
 ]
