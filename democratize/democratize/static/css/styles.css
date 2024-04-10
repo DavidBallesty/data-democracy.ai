@@ -8,6 +8,7 @@ body, html {
   
   #horizontal-nav {
     position: fixed;
+    z-index: 10;     
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -22,9 +23,11 @@ body, html {
     color: yellow;
     /* Animate the individual divs on hover or interaction */
   }
+
   
   #button-container {
     position: absolute;
+    z-index: 10;     
     bottom: 10%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -74,11 +77,37 @@ body, html {
   }
   /* File: static/css/styles.css */
 
-#globe-container {
-    width: 100%;
-    height: 500px; /* Adjust based on how you want it displayed */
-    position: relative;
+  #globe-container {
+    position: absolute; /* Updated from relative to absolute */
+    top: 0;
+    left: 0;
+    width: 100vw; /* 100% of the viewport width */
+    height: 100vh; /* 100% of the viewport height */
+   
+    background-image: url('/static/democratize/worldpoints.webp'); /* Direct path */
+    background-size: cover;
+    background-position: center;  
     overflow: hidden;
+
+  /* Style for countries on the map */
+  .country {
+    fill: #aaa; /* Color inside the countries */
+    stroke: #fff; /* Border color between countries */
+    stroke-width: 0.5; /* Border width */
   }
-  
+
+  /* Style for city markers */
+  .city {
+    fill: yellow; /* Color of the city markers */
+    stroke: #fff; /* Border color for the city markers */
+    stroke-width: 0.5; /* Border width for city markers */
+  }
+
+  /* Style for city labels */
+  .city-label {
+    fill: white; /* Color of the city labels */
+    font-size: 10px; /* Font size for city labels */
+    text-anchor: middle; /* Ensures the text is centered on the coordinates */
+  }
+
   

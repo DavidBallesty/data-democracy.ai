@@ -1,19 +1,15 @@
 <!DOCTYPE html>
-{% load static  %}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>data-democracy.ai</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <!-- Include any additional CSS files here -->
-    <!-- Include libraries like Three.js or Globe.js here -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Ensure you have styles.css in your static/css/ directory -->
 </head>
 <body>
     <header>
-        <!-- Horizontal text navigation -->
         <nav id="horizontal-nav">
-            <!-- Placeholder for dynamic text animation -->
-            <!-- Use JavaScript to animate these texts -->
             <div>Auto Analyze</div>
             <div>Scan Websites</div>
             <div>Scan Images</div>
@@ -23,13 +19,8 @@
     </header>
 
     <main>
-        <!-- Placeholder for interactive globe with dots -->
-        <!-- This will be replaced with the actual globe rendering -->
-        <div id="globe-container">
-            <!-- Placeholder for globe rendering script -->
-        </div>
-
-        <!-- Placeholder for metallic buttons -->
+        <div id="globe-container"></div>
+              
         <div id="button-container">
             <button id="btn-auto-analyze">Auto-Analyze Data</button>
             <button id="btn-scan-websites">Scan Websites with Keywords</button>
@@ -38,19 +29,19 @@
     </main>
 
     <footer>
-        <!-- Language selection -->
         <div id="language-selector">
-            <!-- Buttons or links to switch languages -->
-            <!-- Placeholder for language switch script -->
+            <!-- Language switch will go here -->
         </div>
     </footer>
 
-    <!-- Placeholder for JavaScript animations and interactions -->
-    <script src="{% static 'js/scripts.js' %}"></script>
-    <!-- Include Three.js for 3D globe rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Reference to the globe initialization script -->
-    <script src="{% static 'js/globe.js' %}"></script>
+    <script type="text/javascript">
 
+    var worldMapPath = "{% static 'democratize/worldpoints.webp' %}"; 
+    </script>
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="{% static 'js/globe.js' %}"></script>
 </body>
 </html>

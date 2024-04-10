@@ -30,5 +30,24 @@ function initGlobe() {
     initGlobe();
     animateHorizontalText();
   };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners to buttons
+    document.getElementById('btn-auto-analyze').addEventListener('click', function() {
+        window.location.href = '/auto_analyze/'; // Adjust URL as necessary
+    });
+
+    document.getElementById('btn-scan-websites').addEventListener('click', function() {
+        window.location.href = '/scan_websites/'; // Adjust URL as necessary
+    });
+
+    document.getElementById('btn-scan-images').addEventListener('click', function() {
+        window.location.href = '/scan_images/'; // Adjust URL as necessary
+    });
+
+    // Additional JavaScript for globe.js can be initialized here or in a separate file
+    // initGlobe(); // Uncomment and implement this if globe.js is separate and needs to be initialized
+});
+
   
   
