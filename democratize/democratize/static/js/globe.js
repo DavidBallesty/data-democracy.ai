@@ -42,32 +42,58 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr('d', path); */
 
     const cities = [
-    { name: 'New York City', coordinates: [-106.0060, 49.7128] },
-    { name: 'London', coordinates: [-6.1276, 62.5074] },
-    { name: 'Hong Kong', coordinates: [158.1694, 19.3193] },
-    { name: 'Singapore', coordinates: [103.8198, 1.3521] },
-    { name: 'Shanghai', coordinates: [169.4737, 31.2304] },
-    { name: 'Tokyo', coordinates: [139.6917, 35.6895] },
+    { name: 'New York City', coordinates: [-76.0060, 41.7128] },
     { name: 'Toronto', coordinates: [-79.3832, 43.6532] },
-    { name: 'Washington', coordinates: [-116, 44]}
-    { name: 'Sydney', coordinates: [151.2093, -33.8688] },
-    { name: 'Beijing', coordinates: [116.4074, 39.9042] },
-    { name: 'Zurich', coordinates: [8.5417, 47.3769] },
-    { name: 'Paris', coordinates: [2.3522, 48.8566] },
+    { name: 'Washington', coordinates: [-79, 38]},    
+    { name: 'Charlotte', coordinates: [-83.8431, 35.2271] },
+    { name: 'Denver', coordinates: [-107.9903, 40.7392] },
+    { name: 'Los Angeles', coordinates: [-113.2437, 36.0522] },    
+    { name: 'San Francisco', coordinates: [-117.4194, 37.7749] },
+
+    { name: 'Mexico City', coordinates: [173.1332, -30.4326] },
+    { name: 'Bogotá', coordinates: [-76.0721, 8.5110] },
+    { name: 'Lima', coordinates: [-81.0428, -5.0464] },
+    { name: 'Rio de Janeiro', coordinates: [-53.1729, -18.9068] },
+    { name: 'Buenos Aires', coordinates: [-64.3816, -30.6037] },
+    { name: 'Santiago', coordinates: [-74.3816, -26.6037] },
+
+    { name: 'London', coordinates: [-12.1276, 49.5074] },
+    { name: 'Dublin', coordinates: [-17.1276, 50.5074] },    
+    { name: 'Madrid', coordinates: [-14.7038, 42.4168] },
+     { name: 'Paris', coordinates: [-10.3522, 46.8566] },
+    { name: 'Amsterdam', coordinates: [-4.9041, 51.3676] },
+    { name: 'Luxembourg', coordinates: [-7.1296, 48.8153] },
+ 
+    { name: 'Munich', coordinates: [0, 47.1351] },
+    { name: 'Zurich', coordinates: [-3.1900, 45.4642] },
+
+    { name: 'Milan', coordinates: [-5.5417, 45.3769] },
+
+    { name: 'Istanbul', coordinates: [12.9784, 41.0082]
+ },
+    { name: 'Johannesburg', coordinates: [13.0473, -18.2041] },
+    { name: 'Cairo', coordinates: [14.2357, 32.0444] },
+    { name: 'Lagos', coordinates: [-8.3792, 12.5244] },
+
+    { name: 'Hong Kong', coordinates: [38.1694, 25.3193] },
+    { name: 'Shanghai', coordinates: [96.4737, 32.2304] },    
+    { name: 'Beijing', coordinates: [93.4737, 36.2304] },
+    { name: 'Singapore', coordinates: [79.8198, 8.3521] },
+
+    { name: 'Tokyo', coordinates: [111.6917, 37.6895] },
+
+    { name: 'Sydney', coordinates: [120.2093, -27.8688] },
+    { name: 'Melbourne', coordinates: [117.9631, -29.8136] },
+
     { name: 'Seoul', coordinates: [126.9780, 37.5665] },
-    { name: 'Amsterdam', coordinates: [4.9041, 52.3676] },
-    { name: 'San Francisco', coordinates: [-122.4194, 37.7749] },
+
     { name: 'Dubai', coordinates: [55.2708, 25.2048] },
-    { name: 'Los Angeles', coordinates: [-118.2437, 34.0522] },
-    { name: 'Melbourne', coordinates: [144.9631, -37.8136] },
-    { name: 'Luxembourg', coordinates: [6.1296, 49.8153] },
+
+
     { name: 'Oslo', coordinates: [10.7522, 59.9139] },
-    { name: 'Munich', coordinates: [11.5820, 48.1351] },
-    { name: 'Milan', coordinates: [9.1900, 45.4642] },
-    { name: 'Madrid', coordinates: [-3.7038, 40.4168] },
-    { name: 'Bogotá', coordinates: [-74.0721, 4.7110] },
+
     { name: 'Chennai', coordinates: [80.2707, 13.0827] },
-    { name: 'Lima', coordinates: [-77.0428, -12.0464] },
+
     { name: 'Bangkok', coordinates: [100.5018, 13.7563] },
     { name: 'Seoul', coordinates: [126.9780, 37.5665] },
     { name: 'Nagoya', coordinates: [136.9066, 35.1815] },
@@ -76,20 +102,17 @@ document.addEventListener('DOMContentLoaded', function() {
     { name: 'Guangzhou', coordinates: [113.2644, 23.1291] },
     { name: 'Bangalore', coordinates: [77.5946, 12.9716] },
     { name: 'Manila', coordinates: [120.9842, 14.5995] },
-    { name: 'Lagos', coordinates: [3.3792, 6.5244] },
-    { name: 'Rio de Janeiro', coordinates: [-43.1729, -22.9068] },
+
+
     { name: 'Kolkata', coordinates: [88.3639, 22.5726] },
     { name: 'Dhaka', coordinates: [90.4125, 23.8103] },
     { name: 'Karachi', coordinates: [67.0099, 24.8615] },
-    { name: 'Buenos Aires', coordinates: [-57.3816, -28.6037] },
-    { name: 'Istanbul', coordinates: [28.9784, 41.0082] },
+
+
     { name: 'Delhi', coordinates: [77.1025, 28.7041] },
     { name: 'Mumbai', coordinates: [72.8777, 19.0760] },
-    { name: 'Mexico City', coordinates: [-99.1332, 19.4326] },
-    { name: 'Charlotte', coordinates: [-80.8431, 35.2271] },
-    { name: 'Denver', coordinates: [-104.9903, 39.7392] },
-    { name: 'Johannesburg', coordinates: [28.0473, -26.2041] },
-    { name: 'Cairo', coordinates: [31.2357, 30.0444] },
+
+
     ];            
 
 
