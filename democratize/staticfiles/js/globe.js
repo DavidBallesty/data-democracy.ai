@@ -31,19 +31,18 @@ function animateCityLinks(svg, cities, projection) {
 
             console.log(`Scheduling animation for city pair ${i} with a delay of ${delayForThisPair}ms`);
 
-            // Use an Immediately Invoked Function Expression (IIFE) to capture the current value of i
-            setTimeout((function(index) {
-                return function() {
-                    console.log(`Starting animation for city pair ${index}`);
-                    // Start the animation for the current city pair
-                    startAnimationForCityPair(svg, city, nextCity, projection);
-                }
-            })(i), delayForThisPair);
+            // Schedule the start of the animation for this city pair
+            setTimeout(() => {
+                console.log(`Starting animation for city pair ${i}`);
+                startAnimationForCityPair(svg, city, nextCity, projection);
+            }, delayForThisPair);
         }
     });
 }
 
 function startAnimationForCityPair(svg, city, nextCity, projection) {
+    // Log the start of animation
+    console.log(`Starting animation from ${city.name} to ${nextCity.name}`);
     console.log(`Animating from ${city.name} to ${nextCity.name}`);        // Calculate the positions of the cities
     const startPos = projection(city.coordinates);
     const endPos = projection(nextCity.coordinates);
