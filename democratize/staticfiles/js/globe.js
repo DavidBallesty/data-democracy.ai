@@ -1,6 +1,5 @@
 
 
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM fully loaded and parsed");
 
@@ -8,21 +7,90 @@ document.addEventListener('DOMContentLoaded', function() {
     const projection = defineProjection();
     const cities = defineCities();
     console.log(`Cities defined: ${cities.length}`);
-    
-    const links = createCityLinks(cities);
-    console.log(`City links created: ${links.length}`);
 
-    console.log("Drawing city links");
-    /*drawCityLinks(svg, links, projection); */
-    
     console.log("Drawing cities");
     drawCities(svg, cities, projection); 
     
     console.log("Drawing city labels");
     drawCityLabels(svg, cities, projection);
+
     console.log("Animating city links");
     animateCityLinks(svg, cities, projection); // Call to start the animation
 });
+
+// Define other functions like setupSVG, defineProjection, drawCities, and drawCityLabels...
+function animateCityLinks(svg, cities, projection) {
+    console.log("Animating city links");
+
+    const delayBetweenPairs = 3000; // Delay of 3 seconds between each pair
+
+    cities.forEach((city, i) => {
+        if (i < cities.length - 1) {
+            const nextCity = cities[i + 1];
+            const delayForThisPair = i * delayBetweenPairs;
+
+            console.log(`Scheduling animation for city pair ${i} with a delay of ${delayForThisPair}ms`);
+
+            // Use an Immediately Invoked Function Expression (IIFE) to capture the current value of i
+            setTimeout((function(index) {
+                return function() {
+                    console.log(`Starting animation for city pair ${index}`);
+                    // Start the animation for the current city pair
+                    startAnimationForCityPair(svg, city, nextCity, projection);
+                }
+            })(i), delayForThisPair);
+        }
+    });
+}
+
+function startAnimationForCityPair(svg, city, nextCity, projection) {
+    console.log(`Animating from ${city.name} to ${nextCity.name}`);        // Calculate the positions of the cities
+    const startPos = projection(city.coordinates);
+    const endPos = projection(nextCity.coordinates);
+
+    // Append a line to represent the path
+    const path = svg.append("line")
+        .attr("x1", startPos[0])
+        .attr("y1", startPos[1])
+        .attr("x2", startPos[0]) // start at the city position
+        .attr("y2", startPos[1])
+        .attr("stroke", "cyan")
+        .attr("stroke-width", "2");
+
+    // Append a circle to represent the bright dot at the front
+    const movingDot = svg.append("circle")
+        .attr("cx", startPos[0])
+        .attr("cy", startPos[1])
+        .attr("r", "5")
+        .attr("fill", "yellow");
+
+    // Function to animate the line and dot from start to end
+    const animateLineAndDot = () => {
+        path.transition()
+            .duration(5000) // Duration of the animation in milliseconds
+            .attr("x2", endPos[0])
+            .attr("y2", endPos[1])
+            .on("end", () => {
+                path.remove(); // Remove the path after transition
+                movingDot.remove(); // Remove the moving dot after transition
+            });
+
+        movingDot.transition()
+            .duration(5000)
+            .attr("cx", endPos[0])
+            .attr("cy", endPos[1])
+            .on("end", () => {
+                movingDot.attr("cx", startPos[0]);
+                movingDot.attr("cy", startPos[1]);
+            });
+    };
+
+    // Start the animation
+    animateLineAndDot();
+}
+
+// Rest of the globe.js code...
+
 
 function setupSVG() {
     console.log("Setting up SVG");
