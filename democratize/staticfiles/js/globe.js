@@ -15,78 +15,83 @@ document.addEventListener('DOMContentLoaded', function() {
     drawCityLabels(svg, cities, projection);
 
     console.log("Animating city links");
+    console.log("Animating city links proof");
     animateCityLinks(svg, cities, projection); // Call to start the animation
+
 });
 
 // Define other functions like setupSVG, defineProjection, drawCities, and drawCityLabels...
-function animateCityLinks(svg, cities, projection) {
-    console.log("Animating city links");
+function animateCityLinks(svg, cities, projection, index = 0) {
+    print(`Animating links, current index: ${index}`);
+    console.log(`Animating links, current index: ${index}`);
 
-    const delayBetweenPairs = 3000; // Delay of 3 seconds between each pair
+    if (index < cities.length - 1) {
+        const currentCity = cities[index];
+        const nextCity = cities[index + 1];
+        console.log(`Animating from ${currentCity.name} to ${nextCity.name}`);
 
-    cities.forEach((city, i) => {
-        if (i < cities.length - 1) {
-            const nextCity = cities[i + 1];
-            const delayForThisPair = i * delayBetweenPairs;
-
-            console.log(`Scheduling animation for city pair ${i} with a delay of ${delayForThisPair}ms`);
-
-            // Schedule the start of the animation for this city pair
+        startAnimationForCityPair(svg, currentCity, nextCity, projection, () => {
+            console.log(`Completed animation for ${currentCity.name} to ${nextCity.name}`);
+            // Schedule the next pair animation
             setTimeout(() => {
-                console.log(`Starting animation for city pair ${i}`);
-                startAnimationForCityPair(svg, city, nextCity, projection);
-            }, delayForThisPair);
-        }
-    });
+                animateCityLinks(svg, cities, projection, index + 1);
+            }, 750);  // Adjusted for a 25% progress overlap
+        });
+    } else {
+        console.log("Reached the end of city pairs, restarting...");
+        // Ensure there's no stall by setting a definitive timeout to restart
+        setTimeout(() => {
+            animateCityLinks(svg, cities, projection, 0);  // Recursively start from the first city pair
+        }, 3000);  // Delay before restarting the cycle
+    }
 }
 
-function startAnimationForCityPair(svg, city, nextCity, projection) {
-    // Log the start of animation
-    console.log(`Starting animation from ${city.name} to ${nextCity.name}`);
-    console.log(`Animating from ${city.name} to ${nextCity.name}`);        // Calculate the positions of the cities
-    const startPos = projection(city.coordinates);
-    const endPos = projection(nextCity.coordinates);
+function startAnimationForCityPair(svg, currentCity, nextCity, projection, callback) {
+    try {
+        const start = projection(currentCity.coordinates);
+        const end = projection(nextCity.coordinates);
+        console.log(`Starting animation pair: ${currentCity.name} to ${nextCity.name}`);
 
-    // Append a line to represent the path
-    const path = svg.append("line")
-        .attr("x1", startPos[0])
-        .attr("y1", startPos[1])
-        .attr("x2", startPos[0]) // start at the city position
-        .attr("y2", startPos[1])
-        .attr("stroke", "cyan")
-        .attr("stroke-width", "2");
+        const path = svg.append("path")
+            .attr("d", `M${start[0]} ${start[1]} L${end[0]} ${end[1]}`)
+            .style("stroke", "cyan")
+            .style("stroke-width", 2)
+            .style("fill", "none");
 
-    // Append a circle to represent the bright dot at the front
-    const movingDot = svg.append("circle")
-        .attr("cx", startPos[0])
-        .attr("cy", startPos[1])
-        .attr("r", "5")
-        .attr("fill", "yellow");
-
-    // Function to animate the line and dot from start to end
-    const animateLineAndDot = () => {
-        path.transition()
-            .duration(5000) // Duration of the animation in milliseconds
-            .attr("x2", endPos[0])
-            .attr("y2", endPos[1])
-            .on("end", () => {
-                path.remove(); // Remove the path after transition
-                movingDot.remove(); // Remove the moving dot after transition
-            });
+        const movingDot = svg.append("circle")
+            .attr("r", 5)
+            .attr("fill", "yellow")
+            .attr("transform", `translate(${start[0]},${start[1]})`);
 
         movingDot.transition()
             .duration(5000)
-            .attr("cx", endPos[0])
-            .attr("cy", endPos[1])
+            .ease(d3.easeLinear)
+            .attrTween("transform", translateAlongPath(path.node()))
+            .on("start", function() {
+                console.log(`Dot started moving from ${currentCity.name}`);
+            })
             .on("end", () => {
-                movingDot.attr("cx", startPos[0]);
-                movingDot.attr("cy", startPos[1]);
+                console.log(`Dot completed moving to ${nextCity.name}`);
+                movingDot.remove(); // Remove the dot at the end of the transition
+                path.remove(); // Remove the path at the end of the transition
+                if (callback) callback();  // Execute the callback to continue the loop
             });
-    };
-
-    // Start the animation
-    animateLineAndDot();
+    } catch (error) {
+        console.error("Animation failed:", error);
+    }
 }
+
+function translateAlongPath(path) {
+    const l = path.getTotalLength();
+    return function(d, i, a) {
+        return function(t) {
+            const p = path.getPointAtLength(t * l);
+            return `translate(${p.x},${p.y})`;
+        };
+    };
+}
+
+
 
 // Rest of the globe.js code...
 
@@ -104,64 +109,89 @@ function setupSVG() {
     console.log(`SVG dimensions set: width=${width}, height=${height}`);
     return svg;
 }
-function animateCityLinks(svg, cities, projection) {
-    console.log("Animating city links");
+function animateCityLinks(svg, cities, projection, index = 0) {
+    // Stop if we've reached the end of the cities array
+    if (index >= cities.length - 1) return;
 
-    // Assuming cities is an array of your city objects with a 'coordinates' property
-    cities.forEach((city, i) => {
-        // Ensure that we have the next city to draw a line to
-        if (i < cities.length - 1) {
-            const nextCity = cities[i + 1];
+    // Time control variables
+    const duration = 5000; // Duration of the entire path from city to city
+    const delayBetweenAnimations = duration * 0.25; // Delay to start next animation
 
-            // Calculate the positions of the cities
-            const startPos = projection(city.coordinates);
-            const endPos = projection(nextCity.coordinates);
-
-            // Append a line to represent the path
-            const path = svg.append("line")
-                .attr("x1", startPos[0])
-                .attr("y1", startPos[1])
-                .attr("x2", startPos[0]) // start at the city position
-                .attr("y2", startPos[1])
-                .attr("stroke", "cyan")
-                .attr("stroke-width", "2");
-
-            // Append a circle to represent the bright dot at the front
-            const movingDot = svg.append("circle")
-                .attr("cx", startPos[0])
-                .attr("cy", startPos[1])
-                .attr("r", "5")
-                .attr("fill", "yellow");
-
-            // Function to animate the line and dot from start to end
-            const animateLineAndDot = () => {
-                path.transition()
-                    .duration(3000) // Duration of the animation in milliseconds
-                    .attr("x2", endPos[0])
-                    .attr("y2", endPos[1])
-                    .on("end", () => { // When the line animation is done, loop it
-                        path.attr("x2", startPos[0]);
-                        path.attr("y2", startPos[1]);
-                        movingDot.attr("cx", startPos[0]);
-                        movingDot.attr("cy", startPos[1]);
-                        animateLineAndDot(); // Restart the animation
-                    });
-
-                movingDot.transition()
-                    .duration(3000)
-                    .attr("cx", endPos[0])
-                    .attr("cy", endPos[1])
-                    .on("end", () => {
-                        movingDot.attr("cx", startPos[0]);
-                        movingDot.attr("cy", startPos[1]);
-                    });
-            };
-
-            // Start the animation
-            animateLineAndDot();
-        }
+    // Call the animation function for the current city pair
+    startAnimationForCityPair(svg, cities[index], cities[index + 1], projection, duration, () => {
+        // The callback is empty because we're chaining animations with setTimeout
     });
+
+    // Set timeout to call the next pair, ensuring the index is incremented
+    setTimeout(() => {
+        animateCityLinks(svg, cities, projection, index + 1);
+    }, delayBetweenAnimations);
 }
+function startAnimationForCityPair(svg, currentCity, nextCity, projection, duration, callback) {
+    const start = projection(currentCity.coordinates); // Starting point
+    const end = projection(nextCity.coordinates); // Ending point
+
+    // Calculate a control point for the arc
+    const control = [
+        (start[0] + end[0]) / 2, // x midpoint
+        Math.min(start[1], end[1]) - Math.abs(start[0] - end[0]) / 2, // y is above the highest point
+    ];
+
+    // Define the path as a quadratic bezier curve (arc)
+    const path = svg.append("path")
+        .attr("d", `M${start[0]} ${start[1]} Q${control[0]} ${control[1]} ${end[0]} ${end[1]}`)
+        .style("stroke", "cyan")
+        .style("stroke-width", 2)
+        .style("fill", "none");
+
+    // Calculate the total length of the path
+    const totalLength = path.node().getTotalLength();
+
+    // Set up the initial state of the path's dash array so the path isn't visible initially
+    path.style("stroke-dasharray", `${totalLength} ${totalLength}`)
+        .style("stroke-dashoffset", totalLength);
+
+    // Create the moving dot
+    const movingDot = svg.append("circle")
+        .attr("r", 5)
+        .attr("fill", "yellow")
+        .attr("transform", `translate(${start[0]},${start[1]})`);
+
+    // Start the dot animation
+    movingDot.transition()
+        .duration(duration)
+        .ease(d3.easeLinear)
+        .attrTween("transform", translateAlongPath(path.node()))
+        .on("start", function() {
+            // Start the path animation when the dot starts moving
+            path.transition()
+                .duration(duration)
+                .ease(d3.easeLinear)
+                .style("stroke-dashoffset", 0)
+                .style("stroke-dasharray", `${totalLength}`)
+                .on("end", () => {
+                    path.remove(); // Remove the path at the end
+                });
+        })
+        .on("end", () => {
+            // Remove the dot at the end of the transition
+            movingDot.remove();
+            // Execute the callback if provided
+            if (callback) callback();
+        });
+}
+
+function translateAlongPath(path) {
+    const l = path.getTotalLength();
+    return function(d, i, a) {
+        return function(t) {
+            const p = path.getPointAtLength(t * l);
+            return `translate(${p.x},${p.y})`;
+        };
+    };
+}
+
+
 
 function defineProjection() {
     console.log("Defining projection");
@@ -177,50 +207,58 @@ function defineCities() {
     // Insert your actual cities data here
     return [
         { name: 'New York City', coordinates: [-76.0060, 41.7128] },
+        { name: 'Delhi', coordinates: [57.1025, 31.7041] },        
         { name: 'Toronto', coordinates: [-79.3832, 43.6532] },
-        { name: 'Washington', coordinates: [-79, 38]},    
+        { name: 'Mumbai', coordinates: [51.8777, 23.0760] },        
+        { name: 'Washington', coordinates: [-79, 38]},
+        { name: 'Beijing', coordinates: [93.4737, 36.2304] },            
         { name: 'Charlotte', coordinates: [-83.8431, 35.2271] },
+        { name: 'Bangkok', coordinates: [77.5018, 17.7563] },        
         { name: 'Denver', coordinates: [-107.9903, 40.7392] },
-        { name: 'Los Angeles', coordinates: [-113.2437, 36.0522] },    
+        { name: 'Kolkata', coordinates: [67.0099, 24.8615] },
+        { name: 'Los Angeles', coordinates: [-113.2437, 36.0522] },
+        { name: 'Manila', coordinates: [97.9842, 19.5995] },    
         { name: 'San Francisco', coordinates: [-117.4194, 37.7749] },
+        { name: 'Moscow', coordinates: [21.5946, 36.9716] },
         { name: 'Mexico City', coordinates: [-101.1332, 21.4326] },
+        { name: 'Hong Kong', coordinates: [89.2644, 26.1291] },
         { name: 'Bogotá', coordinates: [-76.0721, 8.5110] },
+        { name: 'Jakarta', coordinates: [82.8650, -0.5] },
         { name: 'Lima', coordinates: [-81.0428, -5.0464] },
+        { name: 'Nagoya', coordinates: [107.9066, 35.1815] },        
         { name: 'Rio de Janeiro', coordinates: [-53.1729, -18.9068] },
         { name: 'Buenos Aires', coordinates: [-64.3816, -30.6037] },
         { name: 'Santiago', coordinates: [-74.3816, -26.6037] },
         { name: 'London', coordinates: [-12.1276, 49.5074] },
-        { name: 'Dublin', coordinates: [-17.1276, 50.5074] },    
         { name: 'Madrid', coordinates: [-14.7038, 42.4168] },
-         { name: 'Paris', coordinates: [-10.3522, 46.8566] },
+        { name: 'Melbourne', coordinates: [117.9631, -29.8136] },
+        { name: 'Paris', coordinates: [-10.3522, 46.8566] },
+        { name: 'Tokyo', coordinates: [111.6917, 37.6895] },
         { name: 'Amsterdam', coordinates: [-4.9041, 51.3676] },
+        { name: 'Singapore', coordinates: [79.8198, 8.3521] },
         { name: 'Luxembourg', coordinates: [-7.1296, 48.8153] },
+        { name: 'Shanghai', coordinates: [96.4737, 32.2304] },
         { name: 'Munich', coordinates: [0, 47.1351] },
+        { name: 'Cairo', coordinates: [14.2357, 32.0444] },
         { name: 'Zurich', coordinates: [-3.1900, 45.4642] },
         { name: 'Milan', coordinates: [-5.5417, 45.3769] },
         { name: 'Istanbul', coordinates: [12.9784, 41.0082] },
         { name: 'Johannesburg', coordinates: [13.0473, -18.2041] },
-        { name: 'Cairo', coordinates: [14.2357, 32.0444] },
+        { name: 'Chennai', coordinates: [61.2707, 19.0827] },        
         { name: 'Lagos', coordinates: [-8.3792, 12.5244] },
-        { name: 'Shanghai', coordinates: [96.4737, 32.2304] },    
-        { name: 'Beijing', coordinates: [93.4737, 36.2304] },
-        { name: 'Singapore', coordinates: [79.8198, 8.3521] },
-        { name: 'Tokyo', coordinates: [111.6917, 37.6895] },
         { name: 'Sydney', coordinates: [120.2093, -27.8688] },
-        { name: 'Melbourne', coordinates: [117.9631, -29.8136] },
         { name: 'Seoul', coordinates: [100.9780, 39.5665] },
+        { name: 'Dublin', coordinates: [-17.1276, 50.5074] },   
         { name: 'Dubai', coordinates: [37.2708, 28.2048] },
         { name: 'Oslo', coordinates: [-2.7522, 57.9139] },
-        { name: 'Chennai', coordinates: [61.2707, 19.0827] },
-        { name: 'Bangkok', coordinates: [77.5018, 17.7563] },
-        { name: 'Nagoya', coordinates: [107.9066, 35.1815] },
-        { name: 'Jakarta', coordinates: [82.8650, -0.5] },
-        { name: 'Hong Kong', coordinates: [89.2644, 26.1291] },
-        { name: 'Moscow', coordinates: [21.5946, 36.9716] },
-        { name: 'Manila', coordinates: [97.9842, 19.5995] },
-        { name: 'Kolkata', coordinates: [67.0099, 24.8615] },
-        { name: 'Delhi', coordinates: [57.1025, 31.7041] },
-        { name: 'Mumbai', coordinates: [51.8777, 23.0760] },
+
+
+
+
+
+
+
+
         // Add more cities as needed
     ];
 }
