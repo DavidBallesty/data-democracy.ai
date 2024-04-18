@@ -375,32 +375,24 @@ function drawCities(svg, cities, projection) {
         .attr('cy', d => projection(d.coordinates)[1])
         .attr('r', '3')
         .attr('fill', 'silver')
-        .style("filter", "url(#glow)");
-
-    // Add the animation for the shine effect
-    svg.selectAll('.city')
+        .style("filter", "url(#glow)")
         .append("animate")
         .attr("attributeName", "r")
         .attr("from", 5)
         .attr("to", 8)
         .attr("dur", "1s")
-        .attr("repeatCount", "indefinite");
+        .attr("repeatCount", "indefinite"); 
+
+    // Add the animation for the shine effect
+  /*  svg.selectAll('.city')
+        .append("animate")
+        .attr("attributeName", "r")
+        .attr("from", 5)
+        .attr("to", 8)
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite"); */
 
     console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
-}
-
-
-function drawCities1(svg, cities, projection) {
-    console.log(`Drawing ${cities.length} cities`);
-    svg.selectAll('.city')
-        .data(cities)
-        .enter().append('circle')
-        .attr('class', 'city')
-        .attr('cx', d => projection(d.coordinates)[0])
-        .attr('cy', d => projection(d.coordinates)[1])
-        .attr('r', '5') 
-        .attr('fill', 'yellow');
-/* this is the new drawcities code */
     svg.selectAll('.city')
     .data(cities)
     .enter().append('circle')
@@ -417,13 +409,35 @@ function drawCities1(svg, cities, projection) {
       // Hide popup
       hidePopup();
     });
-}
+    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);  
+    // Add the event handlers to the circles representing the cities
+    svg.selectAll('.city')
+    .data(cities)
+    .enter().append('circle')
+    .attr('class', 'city')
+    // ... existing attributes and styles ...
+    .on('mouseover', function(event, d) {
+      // Show popup
+      showPopup(d, event);
+    })
+    .on('mousemove', function(event, d) {
+      // Move popup
+      movePopup(event);
+    })
+    .on('mouseout', function(event, d) {
+      // Hide popup
+      hidePopup();
+    });
+
     console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
-}
+}      
+
+
 
 function drawCityLabels(svg, cities, projection) {
     console.log(`Adding labels to ${cities.length} cities`);
     svg.selectAll('.city-label')
+    
         .data(cities)
         .enter().append('text')
         .attr('class', 'city-label')
@@ -437,14 +451,14 @@ function drawCityLabels(svg, cities, projection) {
     console.log(`City labels added: ${svg.selectAll('.city-label').size()}`);
 }
 /* this was the new citypopup code */
-function showPopup(cityData, event) {
+function showPopup1(cityData, event) {
     const popup = document.getElementById('city-popup');
     popup.style.display = 'block';
     popup.textContent = cityData.name; // Or set the image source if it's an <img>
     movePopup(event);
   }
   
-  function movePopup(event) {
+  function movePopup1(event) {
     const popup = document.getElementById('city-popup');
     const distance = calculateDistance(event.clientX, event.clientY);
     if (distance < 300) {
@@ -455,13 +469,48 @@ function showPopup(cityData, event) {
     }
   }
   
-  function hidePopup() {
+  function hidePopup1() {
     const popup = document.getElementById('city-popup');
     popup.style.display = 'none';
   }
   
-  function calculateDistance(x, y) {
+  function calculateDistance1(x, y) {
     // This function should calculate the distance from the initial hover position
     // For simplicity, it's not fully implemented here
     return Math.sqrt(x * x + y * y); // Placeholder calculation
   }
+  /*start of new code */
+
+  
+let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
+
+function showPopup(cityData, event) {
+    const popup = document.getElementById('city-popup');
+    initialX = event.clientX; // Set initial X
+    initialY = event.clientY; // Set initial Y
+    popup.style.display = 'block';
+    popup.textContent = cityData.name;
+    movePopup(event);
+}
+
+function movePopup(event) {
+    const popup = document.getElementById('city-popup');
+    const distance = calculateDistance(event.clientX, event.clientY, initialX, initialY);
+    if (distance < 300) {
+      popup.style.left = `${event.clientX}px`;
+      popup.style.top = `${event.clientY}px`;
+    } else {
+      hidePopup();
+    }
+}
+
+function hidePopup() {
+    const popup = document.getElementById('city-popup');
+    popup.style.display = 'none';
+}
+
+function calculateDistance(x, y, initialX, initialY) {
+    const dx = x - initialX;
+    const dy = y - initialY;
+    return Math.sqrt(dx * dx + dy * dy); // Actual distance calculation
+}

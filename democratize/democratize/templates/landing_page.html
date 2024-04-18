@@ -101,11 +101,15 @@
     <script type="text/javascript">
         var worldMapPath = "{% static 'democratize/worldpoints.webp' %}";
     </script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <div id="popup" class="popup" style="display:none;">
     <!-- Content of the popup goes here -->
     <img src=""{% static 'js/favico.png' %}" />" alt="Popup Image"/>
    </div>
-  
+   <div id="city-popup" class="popup">
+    <!-- Content of the popup goes here -->
+    <img src="{% static 'js/favico.png' %}" alt="Popup Image"/>
+</div> 
 </body>
 </html>
 
