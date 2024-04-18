@@ -365,66 +365,8 @@ function drawCities(svg, cities, projection) {
         .attr("in", "coloredBlur");
     feMerge.append("feMergeNode")
         .attr("in", "SourceGraphic");
-
-    // Append circles for the cities and apply the glow filter
-    svg.selectAll('.city')
-        .data(cities)
-        .enter().append('circle')
-        .attr('class', 'city')
-        .attr('cx', d => projection(d.coordinates)[0])
-        .attr('cy', d => projection(d.coordinates)[1])
-        .attr('r', '3')
-        .attr('fill', 'silver')
-        .style("filter", "url(#glow)")
-        .append("animate")
-        .attr("attributeName", "r")
-        .attr("from", 5)
-        .attr("to", 8)
-        .attr("dur", "1s")
-        .attr("repeatCount", "indefinite"); 
-
-
-
-    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
-    svg.selectAll('.city')
-    .data(cities)
-    .enter().append('circle')
-    // ... existing attributes and styles ...
-    .on('mouseover', function(event, d) {
-      // Show popup
-      showPopup(d, event);
-    })
-    .on('mousemove', function(event, d) {
-      // Move popup
-      movePopup(event);
-    })
-    .on('mouseout', function(event, d) {
-      // Hide popup
-      hidePopup();
-    });
-    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);  
-    // Add the event handlers to the circles representing the cities
-    svg.selectAll('.city')
-    .data(cities)
-    .enter().append('circle')
-    .attr('class', 'city')
-    // ... existing attributes and styles ...
-    .on('mouseover', function(event, d) {
-      // Show popup
-      showPopup(d, event);
-    })
-    .on('mousemove', function(event, d) {
-      // Move popup
-      movePopup(event);
-    })
-    .on('mouseout', function(event, d) {
-      // Hide popup
-      hidePopup();
-    });
-
-    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
-}      
-
+        
+}
 
 
 function drawCityLabels(svg, cities, projection) {

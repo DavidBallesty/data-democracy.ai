@@ -173,9 +173,10 @@ body:hover #custom-cursor {
   opacity: 1;
   visibility: visible;
 }
+
 #city-popup {
   display: none;
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   transform: translate(-50%, -50%);
   border: 1px solid #FFF;
