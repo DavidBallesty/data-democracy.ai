@@ -3,6 +3,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM fully loaded and parsed");
 
+
+
     const svg = setupSVG();
     const projection = defineProjection();
     const cities = defineCities();
@@ -16,170 +18,208 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log("Animating city links");
     console.log("Animating city links proof");
-    animateCityLinks(svg, cities, projection); // Call to start the animation
+    var complete = 0;
+
+    animateCityLinks(svg, cities, projection, complete); // Call to start the animation
+    console.log("complete = " + complete + "<");
 
 });
-
-// Define other functions like setupSVG, defineProjection, drawCities, and drawCityLabels...
-function animateCityLinks(svg, cities, projection, index = 0) {
-    print(`Animating links, current index: ${index}`);
-    console.log(`Animating links, current index: ${index}`);
-
-    if (index < cities.length - 1) {
-        const currentCity = cities[index];
-        const nextCity = cities[index + 1];
-        console.log(`Animating from ${currentCity.name} to ${nextCity.name}`);
-
-        startAnimationForCityPair(svg, currentCity, nextCity, projection, () => {
-            console.log(`Completed animation for ${currentCity.name} to ${nextCity.name}`);
-            // Schedule the next pair animation
-            setTimeout(() => {
-                animateCityLinks(svg, cities, projection, index + 1);
-            }, 750);  // Adjusted for a 25% progress overlap
-        });
-    } else {
-        console.log("Reached the end of city pairs, restarting...");
-        // Ensure there's no stall by setting a definitive timeout to restart
-        setTimeout(() => {
-            animateCityLinks(svg, cities, projection, 0);  // Recursively start from the first city pair
-        }, 3000);  // Delay before restarting the cycle
-    }
-}
-
-function startAnimationForCityPair(svg, currentCity, nextCity, projection, callback) {
-    try {
-        const start = projection(currentCity.coordinates);
-        const end = projection(nextCity.coordinates);
-        console.log(`Starting animation pair: ${currentCity.name} to ${nextCity.name}`);
-
-        const path = svg.append("path")
-            .attr("d", `M${start[0]} ${start[1]} L${end[0]} ${end[1]}`)
-            .style("stroke", "cyan")
-            .style("stroke-width", 2)
-            .style("fill", "none");
-
-        const movingDot = svg.append("circle")
-            .attr("r", 5)
-            .attr("fill", "yellow")
-            .attr("transform", `translate(${start[0]},${start[1]})`);
-
-        movingDot.transition()
-            .duration(5000)
-            .ease(d3.easeLinear)
-            .attrTween("transform", translateAlongPath(path.node()))
-            .on("start", function() {
-                console.log(`Dot started moving from ${currentCity.name}`);
-            })
-            .on("end", () => {
-                console.log(`Dot completed moving to ${nextCity.name}`);
-                movingDot.remove(); // Remove the dot at the end of the transition
-                path.remove(); // Remove the path at the end of the transition
-                if (callback) callback();  // Execute the callback to continue the loop
-            });
-    } catch (error) {
-        console.error("Animation failed:", error);
-    }
-}
-
-function translateAlongPath(path) {
-    const l = path.getTotalLength();
-    return function(d, i, a) {
-        return function(t) {
-            const p = path.getPointAtLength(t * l);
-            return `translate(${p.x},${p.y})`;
-        };
-    };
-}
 
 
 
 // Rest of the globe.js code...
-
-
 function setupSVG() {
-    console.log("Setting up SVG");
-    const width = window.innerWidth;
-    const height = window.innerHeight;
     const svg = d3.select('#globe-container').append('svg')
         .attr('width', '100%')
         .attr('height', '100%')
         .style('position', 'absolute')
         .style('top', '0')
         .style('left', '0');
-    console.log(`SVG dimensions set: width=${width}, height=${height}`);
+
+    // Define the defs block for SVG filters and gradients
+    const defs = svg.append('defs');
+
+    // Define a glow filter with a Gaussian blur and color matrix operations
+    const glowFilter = defs.append('filter')
+        .attr('id', 'glow')
+        .attr('x', '-50%')
+        .attr('y', '-50%')
+        .attr('width', '200%')
+        .attr('height', '200%');
+    glowFilter.append('feGaussianBlur')
+        .attr('in', 'SourceGraphic')
+        .attr('stdDeviation', '2')
+        .attr('result', 'blur');
+    glowFilter.append('feColorMatrix')
+        .attr('in', 'blur')
+        .attr('type', 'matrix')
+        .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10')
+        .attr('result', 'glowColorMatrix');
+    glowFilter.append('feComposite')
+        .attr('in', 'SourceGraphic')
+        .attr('in2', 'glowColorMatrix')
+        .attr('operator', 'over');
+
+    // Define a linear gradient for the fire-like effect
+const fireGradient = defs.append('linearGradient')
+    .attr('id', 'fireGradient')
+    .attr('gradientUnits', 'userSpaceOnUse');
+fireGradient.append('stop')
+    .attr('offset', '0%')
+    .attr('stop-color', '#ff8c00') // A brighter color for more visibility
+    .attr('stop-opacity', '1');    // Full opacity for start of gradient
+fireGradient.append('stop')
+    .attr('offset', '50%')
+    .attr('stop-color', '#ff4500') // Bright orange
+    .attr('stop-opacity', '1');    // Full opacity for mid-gradient
+fireGradient.append('stop')
+    .attr('offset', '100%')
+    .attr('stop-color', '#b22222') // Dark red
+    .attr('stop-opacity', '1');    // Full opacity for end of gradient
+
+
     return svg;
 }
+
+
+
+function setupSVG1() {
+    const svg = d3.select('#globe-container').append('svg')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .style('position', 'absolute')
+        .style('top', '0')
+        .style('left', '0');
+
+    // Definitions for filters and gradients
+    const defs = svg.append('defs');
+
+    // Glow filter
+    const glow = defs.append('filter')
+        .attr('id', 'glow')
+        .attr('x', '-50%')
+        .attr('y', '-50%')
+        .attr('width', '200%')
+        .attr('height', '200%');
+    glow.append('feGaussianBlur')
+        .attr('in', 'SourceGraphic')
+        .attr('stdDeviation', '2')
+        .attr('result', 'blur');
+    glow.append('feColorMatrix')
+        .attr('in', 'blur')
+        .attr('type', 'matrix')
+        .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10')
+        .attr('result', 'glowColorMatrix');
+    glow.append('feComposite')
+        .attr('in', 'SourceGraphic')
+        .attr('in2', 'glowColorMatrix')
+        .attr('operator', 'over');
+
+    // Gradient for the path
+    const gradient = defs.append('linearGradient')
+        .attr('id', 'fireGradient')
+        .attr('gradientUnits', 'userSpaceOnUse');
+    gradient.append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#ff0')
+        .attr('stop-opacity', 0.8);
+    gradient.append('stop')
+        .attr('offset', '50%')
+        .attr('stop-color', '#f00')
+        .attr('stop-opacity', 0.8);
+    gradient.append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#800')
+        .attr('stop-opacity', 0.8);
+
+    return svg;
+}
+
 function animateCityLinks(svg, cities, projection, index = 0) {
-    // Stop if we've reached the end of the cities array
-    if (index >= cities.length - 1) return;
+    console.log(`Animating city link at index ${index}, city name: ${cities[index].name}`);
 
-    // Time control variables
-    const duration = 5000; // Duration of the entire path from city to city
-    const delayBetweenAnimations = duration * 0.25; // Delay to start next animation
+    // Handling to cycle back to the first city after the last one
+    const nextIndex = (index + 1) % cities.length; // Use modulus to loop back
 
-    // Call the animation function for the current city pair
-    startAnimationForCityPair(svg, cities[index], cities[index + 1], projection, duration, () => {
-        // The callback is empty because we're chaining animations with setTimeout
+    const currentCity = cities[index];
+    const nextCity = cities[nextIndex];
+    const duration = 3000; // Duration of the animation in milliseconds
+    const startNextDelay = duration * 0.25; // Start next animation when 25% of the way through the current animation
+
+    startAnimationForCityPair(svg, currentCity, nextCity, projection, duration, () => {
+        console.log(`Completed animation from ${currentCity.name} to ${nextCity.name}`);
     });
 
-    // Set timeout to call the next pair, ensuring the index is incremented
+    // Set timeout to call the next pair with the calculated delay
     setTimeout(() => {
-        animateCityLinks(svg, cities, projection, index + 1);
-    }, delayBetweenAnimations);
+        animateCityLinks(svg, cities, projection, nextIndex);
+    }, startNextDelay);
 }
+
 function startAnimationForCityPair(svg, currentCity, nextCity, projection, duration, callback) {
-    const start = projection(currentCity.coordinates); // Starting point
-    const end = projection(nextCity.coordinates); // Ending point
+    console.log(`Preparing to animate from ${currentCity.name} to ${nextCity.name}`);
+    const start = projection(currentCity.coordinates);
+    const end = projection(nextCity.coordinates);
 
-    // Calculate a control point for the arc
-    const control = [
-        (start[0] + end[0]) / 2, // x midpoint
-        Math.min(start[1], end[1]) - Math.abs(start[0] - end[0]) / 2, // y is above the highest point
-    ];
+    // Calculate control point for a nice arc
+    const control = [(start[0] + end[0]) / 2, Math.min(start[1], end[1]) - Math.abs(start[0] - end[0]) / 2];
 
-    // Define the path as a quadratic bezier curve (arc)
+    // Create a gradient for the path
+    const gradientId = `gradient-${currentCity.name}-to-${nextCity.name}`;
+    const gradient = svg.append("defs")
+      .append("linearGradient")
+      .attr("id", gradientId)
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", start[0])
+      .attr("y1", start[1])
+      .attr("x2", end[0])
+      .attr("y2", end[1]);
+    gradient.append("stop").attr("offset", "0%").attr("stop-color", "#ff0");
+    gradient.append("stop").attr("offset", "100%").attr("stop-color", "#f00");
+
+    // Create the path with the gradient
     const path = svg.append("path")
-        .attr("d", `M${start[0]} ${start[1]} Q${control[0]} ${control[1]} ${end[0]} ${end[1]}`)
-        .style("stroke", "cyan")
-        .style("stroke-width", 2)
-        .style("fill", "none");
+    .attr("d", `M${start[0]} ${start[1]} Q${control[0]} ${control[1]} ${end[0]} ${end[1]}`)
+    .style("stroke", "url(#fireGradient)") // Use the defined gradient for stroke
+    .style("stroke-width", 4) // Increase the stroke width for visibility
+    .style("fill", "none");
 
-    // Calculate the total length of the path
+    console.log(`Path created from ${currentCity.name} to ${nextCity.name}`);
+
     const totalLength = path.node().getTotalLength();
-
-    // Set up the initial state of the path's dash array so the path isn't visible initially
     path.style("stroke-dasharray", `${totalLength} ${totalLength}`)
         .style("stroke-dashoffset", totalLength);
 
-    // Create the moving dot
+    // Create the moving dot with a glow effect
     const movingDot = svg.append("circle")
         .attr("r", 5)
-        .attr("fill", "yellow")
-        .attr("transform", `translate(${start[0]},${start[1]})`);
+        .attr("fill", "black")
+        .style("filter", "url(#glow)")
+        .attr("transform", `translate(${start[0]}, ${start[1]})`);
 
-    // Start the dot animation
+    console.log(`Starting dot animation from ${currentCity.name} to ${nextCity.name}`);
     movingDot.transition()
         .duration(duration)
         .ease(d3.easeLinear)
         .attrTween("transform", translateAlongPath(path.node()))
-        .on("start", function() {
-            // Start the path animation when the dot starts moving
+        .on("start", () => {
+            console.log(`Dot started moving from ${currentCity.name} to ${nextCity.name}`);
             path.transition()
                 .duration(duration)
                 .ease(d3.easeLinear)
                 .style("stroke-dashoffset", 0)
-                .style("stroke-dasharray", `${totalLength}`)
                 .on("end", () => {
-                    path.remove(); // Remove the path at the end
+                    console.log(`Path animation ended for ${currentCity.name} to ${nextCity.name}`);
+                    path.remove();
                 });
         })
         .on("end", () => {
-            // Remove the dot at the end of the transition
+            console.log(`Dot animation ended for ${currentCity.name} to ${nextCity.name}`);
             movingDot.remove();
-            // Execute the callback if provided
             if (callback) callback();
         });
 }
+
 
 function translateAlongPath(path) {
     const l = path.getTotalLength();
@@ -190,6 +230,7 @@ function translateAlongPath(path) {
         };
     };
 }
+
 
 
 
@@ -209,7 +250,12 @@ function defineCities() {
         { name: 'New York City', coordinates: [-76.0060, 41.7128] },
         { name: 'Delhi', coordinates: [57.1025, 31.7041] },        
         { name: 'Toronto', coordinates: [-79.3832, 43.6532] },
-        { name: 'Mumbai', coordinates: [51.8777, 23.0760] },        
+        { name: 'Mumbai', coordinates: [51.8777, 23.0760] },
+        { name: 'Los Angeles', coordinates: [-113.2437, 36.0522] },
+       { name: 'Jakarta', coordinates: [82.8650, -0.5] },
+        { name: 'Lima', coordinates: [-81.0428, -5.0464] },
+        { name: 'Nagoya', coordinates: [107.9066, 35.1815] },        
+        { name: 'Rio de Janeiro', coordinates: [-53.1729, -18.9068] },        
         { name: 'Washington', coordinates: [-79, 38]},
         { name: 'Beijing', coordinates: [93.4737, 36.2304] },            
         { name: 'Charlotte', coordinates: [-83.8431, 35.2271] },
@@ -220,7 +266,14 @@ function defineCities() {
         { name: 'Manila', coordinates: [97.9842, 19.5995] },    
         { name: 'San Francisco', coordinates: [-117.4194, 37.7749] },
         { name: 'Moscow', coordinates: [21.5946, 36.9716] },
-        { name: 'Mexico City', coordinates: [-101.1332, 21.4326] },
+        { name: 'Tokyo', coordinates: [111.6917, 37.6895] },
+        { name: 'Amsterdam', coordinates: [-4.9041, 51.3676] },
+        { name: 'Singapore', coordinates: [79.8198, 8.3521] },
+        { name: 'San Francisco', coordinates: [-117.4194, 37.7749] },        
+        { name: 'Luxembourg', coordinates: [-7.1296, 48.8153] },
+        { name: 'Shanghai', coordinates: [96.4737, 32.2304] },
+        { name: 'Munich', coordinates: [0, 47.1351] },
+        { name: 'Cairo', coordinates: [14.2357, 32.0444] },       { name: 'Mexico City', coordinates: [-101.1332, 21.4326] },
         { name: 'Hong Kong', coordinates: [89.2644, 26.1291] },
         { name: 'Bogotá', coordinates: [-76.0721, 8.5110] },
         { name: 'Jakarta', coordinates: [82.8650, -0.5] },
@@ -248,7 +301,8 @@ function defineCities() {
         { name: 'Lagos', coordinates: [-8.3792, 12.5244] },
         { name: 'Sydney', coordinates: [120.2093, -27.8688] },
         { name: 'Seoul', coordinates: [100.9780, 39.5665] },
-        { name: 'Dublin', coordinates: [-17.1276, 50.5074] },   
+        { name: 'Dublin', coordinates: [-17.1276, 50.5074] },
+        { name: 'Zurich', coordinates: [-3.1900, 45.4642] },   
         { name: 'Dubai', coordinates: [37.2708, 28.2048] },
         { name: 'Oslo', coordinates: [-2.7522, 57.9139] },
 
@@ -293,7 +347,50 @@ function drawCityLinks(svg, links, projection) {
     console.log(`Links drawn: ${svg.selectAll('.link').size()}`);
 }
 
+
 function drawCities(svg, cities, projection) {
+    console.log(`Drawing ${cities.length} cities`);
+    
+    // Define the glow filter
+    const defs = svg.append("defs");
+
+    const glowFilter = defs.append("filter")
+        .attr("id", "glow");
+    glowFilter.append("feGaussianBlur")
+        .attr("class", "blur")
+        .attr("stdDeviation", "2.5")
+        .attr("result", "coloredBlur");
+    const feMerge = glowFilter.append("feMerge");
+    feMerge.append("feMergeNode")
+        .attr("in", "coloredBlur");
+    feMerge.append("feMergeNode")
+        .attr("in", "SourceGraphic");
+
+    // Append circles for the cities and apply the glow filter
+    svg.selectAll('.city')
+        .data(cities)
+        .enter().append('circle')
+        .attr('class', 'city')
+        .attr('cx', d => projection(d.coordinates)[0])
+        .attr('cy', d => projection(d.coordinates)[1])
+        .attr('r', '3')
+        .attr('fill', 'silver')
+        .style("filter", "url(#glow)");
+
+    // Add the animation for the shine effect
+    svg.selectAll('.city')
+        .append("animate")
+        .attr("attributeName", "r")
+        .attr("from", 5)
+        .attr("to", 8)
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite");
+
+    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+}
+
+
+function drawCities1(svg, cities, projection) {
     console.log(`Drawing ${cities.length} cities`);
     svg.selectAll('.city')
         .data(cities)
@@ -303,9 +400,26 @@ function drawCities(svg, cities, projection) {
         .attr('cy', d => projection(d.coordinates)[1])
         .attr('r', '5') 
         .attr('fill', 'yellow');
-
-    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+/* this is the new drawcities code */
+    svg.selectAll('.city')
+    .data(cities)
+    .enter().append('circle')
+    // ... existing attributes and styles ...
+    .on('mouseover', function(event, d) {
+      // Show popup
+      showPopup(d, event);
+    })
+    .on('mousemove', function(event, d) {
+      // Move popup
+      movePopup(event);
+    })
+    .on('mouseout', function(event, d) {
+      // Hide popup
+      hidePopup();
+    });
 }
+    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+
 
 function drawCityLabels(svg, cities, projection) {
     console.log(`Adding labels to ${cities.length} cities`);
@@ -322,3 +436,32 @@ function drawCityLabels(svg, cities, projection) {
 
     console.log(`City labels added: ${svg.selectAll('.city-label').size()}`);
 }
+/* this was the new citypopup code */
+function showPopup(cityData, event) {
+    const popup = document.getElementById('city-popup');
+    popup.style.display = 'block';
+    popup.textContent = cityData.name; // Or set the image source if it's an <img>
+    movePopup(event);
+  }
+  
+  function movePopup(event) {
+    const popup = document.getElementById('city-popup');
+    const distance = calculateDistance(event.clientX, event.clientY);
+    if (distance < 300) {
+      popup.style.left = `${event.clientX}px`;
+      popup.style.top = `${event.clientY}px`;
+    } else {
+      hidePopup();
+    }
+  }
+  
+  function hidePopup() {
+    const popup = document.getElementById('city-popup');
+    popup.style.display = 'none';
+  }
+  
+  function calculateDistance(x, y) {
+    // This function should calculate the distance from the initial hover position
+    // For simplicity, it's not fully implemented here
+    return Math.sqrt(x * x + y * y); // Placeholder calculation
+  }

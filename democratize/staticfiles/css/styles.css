@@ -6,35 +6,60 @@ body, html {
   font-family: 'Arial', sans-serif;
 }
 
-#horizontal-nav {
-  position: fixed; /* Or you could use 'absolute' if fixed positioning is causing issues */
-  top: 0; /* Adjusted to top for visibility */
-  left: 0; /* Adjusted to start from the left */
-  width: 100%; /* Make sure it spans the full width */
-  white-space: nowrap;
-  overflow-x: scroll; /* Ensure scrolling is possible */
-  overflow-y: hidden;
-  z-index: 1000; /* High z-index to ensure visibility */
-}
 
+
+#horizontal-nav {
+  position: fixed;
+  top: 50%; /* Center vertically */
+  left: 0;
+  transform: translateY(-50%); /* Align the center of the element with the vertical center */
+  width: 100%;
+  white-space: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  z-index: 1000;
+  font-size: 300%; /* 300% larger font size */
+  color: transparent; /* Make text transparent */
+  -webkit-text-stroke: 1px #FFF; /* White text outline */
+  text-align: center; /* Center text within each div */
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;  
+}
 #horizontal-nav div {
   font-family: 'Nunito', sans-serif;
-  font-size: 24px; /* Adjusted for demonstration, reduce if necessary */
+  font-size: 80px; /* Adjusted for demonstration, reduce if necessary */
   font-weight: 700;
   text-transform: uppercase;
   display: inline-block;
-  color: #790b07;
+  color: #011110;
+  /*background-color: transparent; */
+  opacity: 0.4;
+  outline: 0.9;
   line-height: 1.4;
   margin: 0 10px; /* Added spacing between items */
   padding: 10px 0; /* Padding for better visibility */
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevent the text from wrapping */
 }
-
+.scroll-content {
+  /* New class for scrollable content */
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
 #button-container {
   position: absolute;
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+}
+.italic-text {
+  font-style: italic;
 }
 
 button {
@@ -88,4 +113,72 @@ button {
   background-size: cover;
   background-position: center;
   overflow: hidden;
+}
+/* Custom Cursor Styles */
+#custom-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000; /* Make sure it is on top of all other elements */
+    transform: translate(-50%, -50%); /* Center the text */
+    transition: transform 0.1s, background 0.3s; /* Smooth transition for moving and changing */
+    padding: 10px;
+    border-radius: 30px; /* Rounded corners */
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    color: white;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 14px;
+    user-select: none;
+    opacity: 0; /* Start with the cursor hidden */
+}
+
+.scroll-cursor {
+    /* Styles for the "scroll down" cursor */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 400px;
+    min-width: 200px;
+    min-height: 80px;
+}
+
+.bullseye-cursor {
+    /* Styles for the bullseye cursor */
+    width: 12px; /* Size of the bullseye */
+    height: 12px;
+    border: 2px solid white; /* White border */
+    border-radius: 50%; /* Circular border */
+    background: transparent;
+    opacity: 0.2;
+    display: block;
+    padding: 0;
+    text-indent: -9999px; /* Hide the text off-screen */
+}
+
+/* Initial animation for cursor appearance */
+body:hover #custom-cursor {
+    opacity: 1; /* Show the cursor when hovering over the body */
+}
+
+.popup {
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s, visibility 0.3s;
+  opacity: 0;
+  visibility: hidden;
+  /* Add more styles for the appearance of the popup */
+}
+.popup-visible {
+  opacity: 1;
+  visibility: visible;
+}
+#city-popup {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  border: 1px solid #FFF;
+  /* Add more styles for the popup appearance */
+  /* Wavy border styling goes here, potentially with an SVG background */
 }
