@@ -353,7 +353,7 @@ function drawCityLabels(svg, cities, projection) {
   
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
-ffunction showPopup(cityData, event) {
+function showPopup(cityData, event) {
     console.log("Event Coordinates on showPopup:", event.clientX, event.clientY);
     const popup = document.getElementById('city-popup');
     console.log("🚀 ~ showPopup ~ popup:", popup);
