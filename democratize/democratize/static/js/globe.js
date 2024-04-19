@@ -1,27 +1,27 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded and parsed");
+    //console.log("DOM fully loaded and parsed");
 
 
 
     const svg = setupSVG();
     const projection = defineProjection();
     const cities = defineCities();
-    console.log(`Cities defined: ${cities.length}`);
+    // //console.log(`Cities defined: ${cities.length}`);
 
-    console.log("Drawing cities");
+    ////console.log("Drawing cities");
     drawCities(svg, cities, projection); 
     
-    console.log("Drawing city labels");
+    ////console.log("Drawing city labels");
     drawCityLabels(svg, cities, projection);
 
-    console.log("Animating city links");
-    console.log("Animating city links proof");
+    ////console.log("Animating city links");
+    ////console.log("Animating city links proof");
     var complete = 0;
 
     animateCityLinks(svg, cities, projection, complete); // Call to start the animation
-    console.log("complete = " + complete + "<");
+    //console.log("complete = " + complete + "<");
 
 });
 
@@ -136,7 +136,7 @@ function setupSVG1() {
 }
 
 function animateCityLinks(svg, cities, projection, index = 0) {
-    console.log(`Animating city link at index ${index}, city name: ${cities[index].name}`);
+    ////console.log(`Animating city link at index ${index}, city name: ${cities[index].name}`);
 
     // Handling to cycle back to the first city after the last one
     const nextIndex = (index + 1) % cities.length; // Use modulus to loop back
@@ -147,7 +147,7 @@ function animateCityLinks(svg, cities, projection, index = 0) {
     const startNextDelay = duration * 0.25; // Start next animation when 25% of the way through the current animation
 
     startAnimationForCityPair(svg, currentCity, nextCity, projection, duration, () => {
-        console.log(`Completed animation from ${currentCity.name} to ${nextCity.name}`);
+        //console.log(`Completed animation from ${currentCity.name} to ${nextCity.name}`);
     });
 
     // Set timeout to call the next pair with the calculated delay
@@ -157,7 +157,7 @@ function animateCityLinks(svg, cities, projection, index = 0) {
 }
 
 function startAnimationForCityPair(svg, currentCity, nextCity, projection, duration, callback) {
-    console.log(`Preparing to animate from ${currentCity.name} to ${nextCity.name}`);
+    //console.log(`Preparing to animate from ${currentCity.name} to ${nextCity.name}`);
     const start = projection(currentCity.coordinates);
     const end = projection(nextCity.coordinates);
 
@@ -184,7 +184,7 @@ function startAnimationForCityPair(svg, currentCity, nextCity, projection, durat
     .style("stroke-width", 4) // Increase the stroke width for visibility
     .style("fill", "none");
 
-    console.log(`Path created from ${currentCity.name} to ${nextCity.name}`);
+    //console.log(`Path created from ${currentCity.name} to ${nextCity.name}`);
 
     const totalLength = path.node().getTotalLength();
     path.style("stroke-dasharray", `${totalLength} ${totalLength}`)
@@ -197,24 +197,24 @@ function startAnimationForCityPair(svg, currentCity, nextCity, projection, durat
         .style("filter", "url(#glow)")
         .attr("transform", `translate(${start[0]}, ${start[1]})`);
 
-    console.log(`Starting dot animation from ${currentCity.name} to ${nextCity.name}`);
+    //console.log(`Starting dot animation from ${currentCity.name} to ${nextCity.name}`);
     movingDot.transition()
         .duration(duration)
         .ease(d3.easeLinear)
         .attrTween("transform", translateAlongPath(path.node()))
         .on("start", () => {
-            console.log(`Dot started moving from ${currentCity.name} to ${nextCity.name}`);
+            //console.log(`Dot started moving from ${currentCity.name} to ${nextCity.name}`);
             path.transition()
                 .duration(duration)
                 .ease(d3.easeLinear)
                 .style("stroke-dashoffset", 0)
                 .on("end", () => {
-                    console.log(`Path animation ended for ${currentCity.name} to ${nextCity.name}`);
+                    //console.log(`Path animation ended for ${currentCity.name} to ${nextCity.name}`);
                     path.remove();
                 });
         })
         .on("end", () => {
-            console.log(`Dot animation ended for ${currentCity.name} to ${nextCity.name}`);
+            //console.log(`Dot animation ended for ${currentCity.name} to ${nextCity.name}`);
             movingDot.remove();
             if (callback) callback();
         });
@@ -235,16 +235,16 @@ function translateAlongPath(path) {
 
 
 function defineProjection() {
-    console.log("Defining projection");
+    //console.log("Defining projection");
     const width = window.innerWidth;
     const height = window.innerHeight;
     const projection = d3.geoMercator().center([0, 20]).scale(width / (2 * Math.PI)).translate([width / 2, height / 2]);
-    console.log(`Projection defined with center [0,20], scale based on width`);
+    //console.log(`Projection defined with center [0,20], scale based on width`);
     return projection;
 }
 
 function defineCities() {
-    console.log("Defining cities");
+    //console.log("Defining cities");
     // Insert your actual cities data here
     return [
         { name: 'New York City', coordinates: [-76.0060, 41.7128] },
@@ -318,7 +318,7 @@ function defineCities() {
 }
 
 function createCityLinks(cities) {
-    console.log("Creating links between cities");
+    //console.log("Creating links between cities");
     let links = [];
     for (let i = 0; i < cities.length - 1; i++) {
         links.push({
@@ -330,7 +330,7 @@ function createCityLinks(cities) {
 }
 
 function drawCityLinks(svg, links, projection) {
-    console.log(`Attempting to draw ${links.length} links`);
+    //console.log(`Attempting to draw ${links.length} links`);
     const linkGenerator = d3.linkHorizontal()
         .x(d => projection(d)[0])
         .y(d => projection(d)[1]);
@@ -344,12 +344,12 @@ function drawCityLinks(svg, links, projection) {
         .style('stroke-width', '2px')
         .style('fill', 'none');
 
-    console.log(`Links drawn: ${svg.selectAll('.link').size()}`);
+    //console.log(`Links drawn: ${svg.selectAll('.link').size()}`);
 }
 
 
 function drawCities(svg, cities, projection) {
-    console.log(`Drawing ${cities.length} cities`);
+    //console.log(`Drawing ${cities.length} cities`);
     
     // Define the glow filter
     const defs = svg.append("defs");
@@ -399,13 +399,13 @@ function drawCities(svg, cities, projection) {
             hidePopup();
         });
 
-    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+    //console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
 }
 
 
 
 function drawCityLabels(svg, cities, projection) {
-    console.log(`Adding labels to ${cities.length} cities`);
+    //console.log(`Adding labels to ${cities.length} cities`);
     svg.selectAll('.city-label')
     
         .data(cities)
@@ -418,7 +418,7 @@ function drawCityLabels(svg, cities, projection) {
         .attr('fill', 'white')
         .style('font-size', '10px');
 
-    console.log(`City labels added: ${svg.selectAll('.city-label').size()}`);
+    //console.log(`City labels added: ${svg.selectAll('.city-label').size()}`);
 }
 
   /*start of new code */
@@ -428,6 +428,7 @@ let initialX, initialY; // Variables to hold the initial position of the cursor 
 
 function showPopup(cityData, event) {
     const popup = document.getElementById('city-popup');
+    console.log("🚀 ~ showPopup ~ popup:", popup)
     initialX = event.clientX; // Set initial X
     initialY = event.clientY; // Set initial Y
     popup.style.display = 'block';
@@ -437,6 +438,7 @@ function showPopup(cityData, event) {
 
 function movePopup(event) {
     const popup = document.getElementById('city-popup');
+    console.log("🚀 ~ movePopup ~ popup:", popup)
     const distance = calculateDistance(event.clientX, event.clientY, initialX, initialY);
     if (distance < 300) {
       popup.style.left = `${event.clientX}px`;
@@ -448,11 +450,15 @@ function movePopup(event) {
 
 function hidePopup() {
     const popup = document.getElementById('city-popup');
+    console.log("🚀 ~ hidePopup ~ popup:", popup)
     popup.style.display = 'none';
 }
 
 function calculateDistance(x, y, initialX, initialY) {
     const dx = x - initialX;
+    console.log("🚀 ~ calculateDistance ~ dx:", dx)
     const dy = y - initialY;
+    console.log("🚀 ~ calculateDistance ~ dy:", dy)
+    console.log("🚀 ~ calculateDistance ~ distance:", Math.sqrt(dx * dx + dy * dy));
     return Math.sqrt(dx * dx + dy * dy); // Actual distance calculation
 }

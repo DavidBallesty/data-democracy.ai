@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
@@ -60,32 +59,25 @@
                 <defs>
                   <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-                    <feColorMatrix in="blur" type="matrix" values="
-                        1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 20 -10" result="glowColorMatrix"/>
+                    <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 20 -10" result="glowColorMatrix"/>
                     <feComposite in="SourceGraphic" in2="glowColorMatrix" operator="over"/>
                   </filter>
-              
                   <linearGradient id="fireGradient" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stop-color="#ff0" stop-opacity="0.8"/>
                     <stop offset="50%" stop-color="#f00" stop-opacity="0.8"/>
                     <stop offset="100%" stop-color="#800" stop-opacity="0.8"/>
                   </linearGradient>
-              
                   <path id="electricPath" d="M0,0 L100,100" stroke="url(#fireGradient)" filter="url(#glow)"/>
                 </defs>
-                <!-- Your map and paths will go here -->
             </svg>
-              
         </div>
-
         <div id="button-container">
             <button id="btn-auto-analyze">Auto-Analyze Data</button>
             <button id="btn-scan-websites">Scan Websites with Keywords</button>
             <button id="btn-scan-images">Scan Images for Text</button>
         </div>
+        <div id="city-popup" class="popup" style="display: block; left: 50px; top: 50px;">Test Popup</div>
+
     </main>
 
     <footer>
@@ -98,20 +90,11 @@
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="{% static 'js/scripts.js' %}"></script>
     <script src="{% static 'js/globe.js' %}"></script>
-    <script type="text/javascript">
-        var worldMapPath = "{% static 'democratize/worldpoints.webp' %}";
-    </script>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
     <div id="popup" class="popup" style="display:none;">
-    <!-- Content of the popup goes here -->
-    <img src=""{% static 'js/favico.png' %}" />" alt="Popup Image"/>
-   </div>
-   <div id="city-popup" class="popup">
-    <!-- Content of the popup goes here -->
-    <img src="{% static 'js/favico.png' %}" alt="Popup Image"/>
-</div> 
+        <img src="{% static 'js/favico.png' %}" alt="Popup Image"/>
+    </div>
+    <div id="city-popup" class="popup">
+        <img src="{% static 'js/favico.png' %}" alt="Popup Image"/>
+    </div>
 </body>
 </html>
-
-
-
