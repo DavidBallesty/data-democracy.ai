@@ -82,58 +82,14 @@ fireGradient.append('stop')
 }
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    const staticPopup = document.getElementById('city-popup');
+    staticPopup.style.display = 'block';  // Force display
+    staticPopup.style.left = '50px';
+    staticPopup.style.top = '50px';
+    console.log("Static test - Popup displayed");
+});
 
-function setupSVG1() {
-    const svg = d3.select('#globe-container').append('svg')
-        .attr('width', '100%')
-        .attr('height', '100%')
-        .style('position', 'absolute')
-        .style('top', '0')
-        .style('left', '0');
-
-    // Definitions for filters and gradients
-    const defs = svg.append('defs');
-
-    // Glow filter
-    const glow = defs.append('filter')
-        .attr('id', 'glow')
-        .attr('x', '-50%')
-        .attr('y', '-50%')
-        .attr('width', '200%')
-        .attr('height', '200%');
-    glow.append('feGaussianBlur')
-        .attr('in', 'SourceGraphic')
-        .attr('stdDeviation', '2')
-        .attr('result', 'blur');
-    glow.append('feColorMatrix')
-        .attr('in', 'blur')
-        .attr('type', 'matrix')
-        .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10')
-        .attr('result', 'glowColorMatrix');
-    glow.append('feComposite')
-        .attr('in', 'SourceGraphic')
-        .attr('in2', 'glowColorMatrix')
-        .attr('operator', 'over');
-
-    // Gradient for the path
-    const gradient = defs.append('linearGradient')
-        .attr('id', 'fireGradient')
-        .attr('gradientUnits', 'userSpaceOnUse');
-    gradient.append('stop')
-        .attr('offset', '0%')
-        .attr('stop-color', '#ff0')
-        .attr('stop-opacity', 0.8);
-    gradient.append('stop')
-        .attr('offset', '50%')
-        .attr('stop-color', '#f00')
-        .attr('stop-opacity', 0.8);
-    gradient.append('stop')
-        .attr('offset', '100%')
-        .attr('stop-color', '#800')
-        .attr('stop-opacity', 0.8);
-
-    return svg;
-}
 
 function animateCityLinks(svg, cities, projection, index = 0) {
     ////console.log(`Animating city link at index ${index}, city name: ${cities[index].name}`);
@@ -347,28 +303,11 @@ function drawCityLinks(svg, links, projection) {
     //console.log(`Links drawn: ${svg.selectAll('.link').size()}`);
 }
 
-
 function drawCities(svg, cities, projection) {
-    //console.log(`Drawing ${cities.length} cities`);
-    
-    // Define the glow filter
-    const defs = svg.append("defs");
-
-    const glowFilter = defs.append("filter")
-        .attr("id", "glow");
-    glowFilter.append("feGaussianBlur")
-        .attr("class", "blur")
-        .attr("stdDeviation", "2.5")
-        .attr("result", "coloredBlur");
-    const feMerge = glowFilter.append("feMerge");
-    feMerge.append("feMergeNode")
-        .attr("in", "coloredBlur");
-    feMerge.append("feMergeNode")
-        .attr("in", "SourceGraphic");
-    // Select all the city elements and append circle SVG elements for each city
+    console.log("Drawing cities, attaching events");
     const citySelection = svg.selectAll('.city')
-        .data(cities)
-        .enter().append('circle')
+        .data(cities).enter()
+        .append('circle')
         .attr('class', 'city')
         .attr('cx', d => projection(d.coordinates)[0])
         .attr('cy', d => projection(d.coordinates)[1])
@@ -376,30 +315,18 @@ function drawCities(svg, cities, projection) {
         .attr('fill', 'silver')
         .style("filter", "url(#glow)");
 
-    // Add animations to city circles for a pulsating effect
-    citySelection.append("animate")
-        .attr("attributeName", "r")
-        .attr("from", 5)
-        .attr("to", 8)
-        .attr("dur", "1s")
-        .attr("repeatCount", "indefinite"); 
+    citySelection.on('mouseover', function(event, d) {
+        console.log("Mouseover event on city:", d.name);
+        showPopup(d, event);
+    }).on('mousemove', function(event, d) {
+        console.log("Mousemove event on city:", d.name);
+        movePopup(event);
+    }).on('mouseout', function(event, d) {
+        console.log("Mouseout event on city:", d.name);
+        hidePopup();
+    });
 
-    // Attach event handlers for mouse interaction
-    citySelection
-        .on('mouseover', function(event, d) {
-            // Show popup
-            showPopup(d, event);
-        })
-        .on('mousemove', function(event, d) {
-            // Move popup
-            movePopup(event);
-        })
-        .on('mouseout', function(event, d) {
-            // Hide popup
-            hidePopup();
-        });
-
-    //console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+    console.log("Cities drawn and events attached:", citySelection.size());
 }
 
 
@@ -426,39 +353,48 @@ function drawCityLabels(svg, cities, projection) {
   
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
-function showPopup(cityData, event) {
+ffunction showPopup(cityData, event) {
+    console.log("Event Coordinates on showPopup:", event.clientX, event.clientY);
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ showPopup ~ popup:", popup)
+    console.log("🚀 ~ showPopup ~ popup:", popup);
     initialX = event.clientX; // Set initial X
     initialY = event.clientY; // Set initial Y
     popup.style.display = 'block';
     popup.textContent = cityData.name;
+    console.log(`Popup shown for ${cityData.name} at ${initialX}, ${initialY}`);
     movePopup(event);
 }
 
 function movePopup(event) {
+    console.log("Event Coordinates on movePopup:", event.clientX, event.clientY);
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ movePopup ~ popup:", popup)
-    const distance = calculateDistance(event.clientX, event.clientY, initialX, initialY);
+    console.log("🚀 ~ movePopup ~ popup:", popup);
+    let dx = event.clientX - initialX;
+    let dy = event.clientY - initialY;
+    console.log("DX, DY:", dx, dy);
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    console.log("Distance Calculated:", distance);
     if (distance < 300) {
-      popup.style.left = `${event.clientX}px`;
-      popup.style.top = `${event.clientY}px`;
+        popup.style.left = `${event.clientX}px`;
+        popup.style.top = `${event.clientY}px`;
     } else {
-      hidePopup();
+        hidePopup();
     }
 }
 
 function hidePopup() {
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ hidePopup ~ popup:", popup)
+    console.log("🚀 ~ hidePopup ~ popup:", popup);
     popup.style.display = 'none';
 }
 
+
 function calculateDistance(x, y, initialX, initialY) {
     const dx = x - initialX;
-    console.log("🚀 ~ calculateDistance ~ dx:", dx)
     const dy = y - initialY;
-    console.log("🚀 ~ calculateDistance ~ dy:", dy)
-    console.log("🚀 ~ calculateDistance ~ distance:", Math.sqrt(dx * dx + dy * dy));
-    return Math.sqrt(dx * dx + dy * dy); // Actual distance calculation
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    console.log("DX:", dx, "DY:", dy, "Distance:", distance);
+    return distance;
 }
+
+

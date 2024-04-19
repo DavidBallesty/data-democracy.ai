@@ -4,6 +4,7 @@ body, html {
   color: white;
   background-color: black;
   font-family: 'Arial', sans-serif;
+  
 }
 
 
@@ -175,7 +176,7 @@ body:hover #custom-cursor {
 }
 
 #city-popup {
-  display: none; /* Hidden by default */
+  /*display: none; /* Hidden by default */
   position: fixed; /* Fixed position relative to the viewport */
   z-index: 1001; /* Ensure it appears above other elements */
   padding: 10px; /* Space inside the popup */
