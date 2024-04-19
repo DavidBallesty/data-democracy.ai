@@ -18,7 +18,7 @@ body, html {
   white-space: nowrap;
   overflow-x: scroll;
   overflow-y: hidden;
-  z-index: 1000;
+  /*z-index: 1000; */
   font-size: 300%; /* 300% larger font size */
   color: transparent; /* Make text transparent */
   -webkit-text-stroke: 1px #FFF; /* White text outline */
@@ -115,11 +115,26 @@ button {
   background-position: center;
   overflow: hidden;
 }
+
+#city-popup {
+  /*display: none; /* Hidden by default */
+  position: fixed; /* Fixed position relative to the viewport */
+  z-index: 2000; /* Ensure it appears above other elements */
+  padding: 10px; /* Space inside the popup */
+  background: white; /* Background color */
+  color: black; /* Text color */
+  border: 1px solid #FFF; /* Border properties */
+  border-radius: 8px; /* Rounded corners */
+  opacity: 1;
+  /* Add more styles for the popup appearance */
+  /* Wavy border styling goes here, potentially with an SVG background */
+}
+
 /* Custom Cursor Styles */
 #custom-cursor {
     position: fixed;
     pointer-events: none;
-    z-index: 10000; /* Make sure it is on top of all other elements */
+    /*z-index: 10000; /* Make sure it is on top of all other elements */
     transform: translate(-50%, -50%); /* Center the text */
     transition: transform 0.1s, background 0.3s; /* Smooth transition for moving and changing */
     padding: 10px;
@@ -173,17 +188,4 @@ body:hover #custom-cursor {
 .popup-visible {
   opacity: 1;
   visibility: visible;
-}
-
-#city-popup {
-  /*display: none; /* Hidden by default */
-  position: fixed; /* Fixed position relative to the viewport */
-  z-index: 1001; /* Ensure it appears above other elements */
-  padding: 10px; /* Space inside the popup */
-  background: white; /* Background color */
-  color: black; /* Text color */
-  border: 1px solid #FFF; /* Border properties */
-  border-radius: 8px; /* Rounded corners */
-  /* Add more styles for the popup appearance */
-  /* Wavy border styling goes here, potentially with an SVG background */
 }

@@ -323,7 +323,7 @@ function drawCities(svg, cities, projection) {
         movePopup(event);
     }).on('mouseout', function(event, d) {
         console.log("Mouseout event on city:", d.name);
-        hidePopup();
+        //hidePopup();
     });
 
     console.log("Cities drawn and events attached:", citySelection.size());
@@ -354,40 +354,44 @@ function drawCityLabels(svg, cities, projection) {
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
 function showPopup(cityData, event) {
-    console.log(`Mouseover event coordinates: (${event.clientX}, ${event.clientY})`);
+    console.log(`showPopup called: Showing popup for ${cityData.name} at coordinates (${event.clientX}, ${event.clientY})`);
     const popup = document.getElementById('city-popup');
-    console.log(`🚀 ~ showPopup ~ initial popup status: ${popup.style.display}`);
+    console.log(`Before showing - Display: ${popup.style.display}, Opacity: ${popup.style.opacity}, Visibility: ${popup.style.visibility}`);
     initialX = event.clientX;
     initialY = event.clientY;
     popup.style.display = 'block';
+    popup.style.opacity = '1';
+    popup.style.visibility = 'visible';
     popup.textContent = cityData.name;
     popup.style.left = `${event.clientX}px`;
     popup.style.top = `${event.clientY}px`;
-    console.log(`Popup for ${cityData.name} shown at (${initialX}, ${initialY}) with status ${popup.style.display}`);
-}
-
-function movePopup(event) {
-    const popup = document.getElementById('city-popup');
-    let dx = event.clientX - initialX;
-    let dy = event.clientY - initialY;
-    console.log(`MovePopup Coordinates: New (${event.clientX}, ${event.clientY}) vs Initial (${initialX}, ${initialY})`);
-    console.log(`DX: ${dx}, DY: ${dy}`);
-    let distance = Math.sqrt(dx * dx + dy * dy);
-    console.log(`Distance from initial point: ${distance}`);
-    if (distance < 300) {
-        popup.style.left = `${event.clientX}px`;
-        popup.style.top = `${event.clientY}px`;
-        console.log(`Popup moved to (${event.clientX}, ${event.clientY})`);
-    } else {
-        hidePopup();
-    }
+    console.log(`After showing - Display: ${popup.style.display}, Left: ${popup.style.left}, Top: ${popup.style.top}`);
 }
 
 function hidePopup() {
     const popup = document.getElementById('city-popup');
-    console.log(`Hiding popup with current style: ${popup.style.display}`);
+    console.log(`hidePopup called: Hiding popup, current status - Display: ${popup.style.display}`);
     popup.style.display = 'none';
+    popup.style.opacity = '0';
+    popup.style.visibility = 'hidden';
+    console.log(`After hiding - Display: ${popup.style.display}, Opacity: ${popup.style.opacity}, Visibility: ${popup.style.visibility}`);
 }
+function movePopup(event) {
+    const popup = document.getElementById('city-popup');
+    let dx = event.clientX - initialX;
+    let dy = event.clientY - initialY;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    console.log(`movePopup called: DX=${dx}, DY=${dy}, Distance=${distance}`);
+    if (distance < 300) {  // Consider increasing this threshold for testing
+        popup.style.left = `${event.clientX}px`;
+        popup.style.top = `${event.clientY}px`;
+        console.log(`Popup moved to (${event.clientX}, ${event.clientY})`);
+    } else {
+        console.log("Distance threshold exceeded, hiding popup");
+        hidePopup();
+    }
+}
+
 
 
 function calculateDistance(x, y, initialX, initialY) {
