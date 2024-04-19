@@ -354,28 +354,41 @@ function drawCityLabels(svg, cities, projection) {
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
 function showPopup(cityData, event) {
+    console.log(`Mouseover event coordinates: (${event.clientX}, ${event.clientY})`);
     const popup = document.getElementById('city-popup');
-    console.log("Before showing popup:", popup.style.display);  // Log current display state before changing
+    console.log(`🚀 ~ showPopup ~ initial popup status: ${popup.style.display}`);
+    initialX = event.clientX;
+    initialY = event.clientY;
     popup.style.display = 'block';
     popup.textContent = cityData.name;
-    console.log("After showing popup:", popup.style.display);  // Log current display state after changing
-    console.log("Popup content:", popup.textContent);           // Log the content that's being set
-    movePopup(event);
+    popup.style.left = `${event.clientX}px`;
+    popup.style.top = `${event.clientY}px`;
+    console.log(`Popup for ${cityData.name} shown at (${initialX}, ${initialY}) with status ${popup.style.display}`);
 }
 
 function movePopup(event) {
     const popup = document.getElementById('city-popup');
-    console.log("Before moving popup - display:", popup.style.display, "left:", popup.style.left, "top:", popup.style.top);
-    const distance = calculateDistance(event.clientX, event.clientY, initialX, initialY);
-    console.log("Calculated distance:", distance);
+    let dx = event.clientX - initialX;
+    let dy = event.clientY - initialY;
+    console.log(`MovePopup Coordinates: New (${event.clientX}, ${event.clientY}) vs Initial (${initialX}, ${initialY})`);
+    console.log(`DX: ${dx}, DY: ${dy}`);
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    console.log(`Distance from initial point: ${distance}`);
     if (distance < 300) {
         popup.style.left = `${event.clientX}px`;
         popup.style.top = `${event.clientY}px`;
-        console.log("After moving popup - display:", popup.style.display, "left:", popup.style.left, "top:", popup.style.top);
+        console.log(`Popup moved to (${event.clientX}, ${event.clientY})`);
     } else {
         hidePopup();
     }
 }
+
+function hidePopup() {
+    const popup = document.getElementById('city-popup');
+    console.log(`Hiding popup with current style: ${popup.style.display}`);
+    popup.style.display = 'none';
+}
+
 
 function calculateDistance(x, y, initialX, initialY) {
     const dx = x - initialX;
@@ -384,9 +397,5 @@ function calculateDistance(x, y, initialX, initialY) {
     console.log("DX:", dx, "DY:", dy, "Distance:", distance);
     return distance;
 }
-function hidePopup() {
-    const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ hidePopup ~ popup:", popup)
-    popup.style.display = 'none';
-}
+
 

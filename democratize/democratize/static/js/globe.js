@@ -354,29 +354,30 @@ function drawCityLabels(svg, cities, projection) {
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
 function showPopup(cityData, event) {
-    console.log("Event Coordinates on showPopup:", event.clientX, event.clientY);
+    console.log(`Mouseover event coordinates: (${event.clientX}, ${event.clientY})`);
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ showPopup ~ popup:", popup);
-    initialX = event.clientX; // Set initial X
-    initialY = event.clientY; // Set initial Y
+    console.log(`🚀 ~ showPopup ~ initial popup status: ${popup.style.display}`);
+    initialX = event.clientX;
+    initialY = event.clientY;
     popup.style.display = 'block';
     popup.textContent = cityData.name;
-    console.log(`Popup shown for ${cityData.name} at ${initialX}, ${initialY}`);
-    movePopup(event);
+    popup.style.left = `${event.clientX}px`;
+    popup.style.top = `${event.clientY}px`;
+    console.log(`Popup for ${cityData.name} shown at (${initialX}, ${initialY}) with status ${popup.style.display}`);
 }
 
 function movePopup(event) {
-    console.log("Event Coordinates on movePopup:", event.clientX, event.clientY);
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ movePopup ~ popup:", popup);
     let dx = event.clientX - initialX;
     let dy = event.clientY - initialY;
-    console.log("DX, DY:", dx, dy);
+    console.log(`MovePopup Coordinates: New (${event.clientX}, ${event.clientY}) vs Initial (${initialX}, ${initialY})`);
+    console.log(`DX: ${dx}, DY: ${dy}`);
     let distance = Math.sqrt(dx * dx + dy * dy);
-    console.log("Distance Calculated:", distance);
+    console.log(`Distance from initial point: ${distance}`);
     if (distance < 300) {
         popup.style.left = `${event.clientX}px`;
         popup.style.top = `${event.clientY}px`;
+        console.log(`Popup moved to (${event.clientX}, ${event.clientY})`);
     } else {
         hidePopup();
     }
@@ -384,7 +385,7 @@ function movePopup(event) {
 
 function hidePopup() {
     const popup = document.getElementById('city-popup');
-    console.log("🚀 ~ hidePopup ~ popup:", popup);
+    console.log(`Hiding popup with current style: ${popup.style.display}`);
     popup.style.display = 'none';
 }
 
