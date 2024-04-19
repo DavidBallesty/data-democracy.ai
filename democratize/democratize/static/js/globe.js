@@ -365,8 +365,43 @@ function drawCities(svg, cities, projection) {
         .attr("in", "coloredBlur");
     feMerge.append("feMergeNode")
         .attr("in", "SourceGraphic");
-        
+    // Select all the city elements and append circle SVG elements for each city
+    const citySelection = svg.selectAll('.city')
+        .data(cities)
+        .enter().append('circle')
+        .attr('class', 'city')
+        .attr('cx', d => projection(d.coordinates)[0])
+        .attr('cy', d => projection(d.coordinates)[1])
+        .attr('r', '3')
+        .attr('fill', 'silver')
+        .style("filter", "url(#glow)");
+
+    // Add animations to city circles for a pulsating effect
+    citySelection.append("animate")
+        .attr("attributeName", "r")
+        .attr("from", 5)
+        .attr("to", 8)
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite"); 
+
+    // Attach event handlers for mouse interaction
+    citySelection
+        .on('mouseover', function(event, d) {
+            // Show popup
+            showPopup(d, event);
+        })
+        .on('mousemove', function(event, d) {
+            // Move popup
+            movePopup(event);
+        })
+        .on('mouseout', function(event, d) {
+            // Hide popup
+            hidePopup();
+        });
+
+    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
 }
+
 
 
 function drawCityLabels(svg, cities, projection) {
@@ -385,35 +420,7 @@ function drawCityLabels(svg, cities, projection) {
 
     console.log(`City labels added: ${svg.selectAll('.city-label').size()}`);
 }
-/* this was the new citypopup code */
-function showPopup1(cityData, event) {
-    const popup = document.getElementById('city-popup');
-    popup.style.display = 'block';
-    popup.textContent = cityData.name; // Or set the image source if it's an <img>
-    movePopup(event);
-  }
-  
-  function movePopup1(event) {
-    const popup = document.getElementById('city-popup');
-    const distance = calculateDistance(event.clientX, event.clientY);
-    if (distance < 300) {
-      popup.style.left = `${event.clientX}px`;
-      popup.style.top = `${event.clientY}px`;
-    } else {
-      hidePopup();
-    }
-  }
-  
-  function hidePopup1() {
-    const popup = document.getElementById('city-popup');
-    popup.style.display = 'none';
-  }
-  
-  function calculateDistance1(x, y) {
-    // This function should calculate the distance from the initial hover position
-    // For simplicity, it's not fully implemented here
-    return Math.sqrt(x * x + y * y); // Placeholder calculation
-  }
+
   /*start of new code */
 
   

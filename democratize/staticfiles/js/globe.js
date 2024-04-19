@@ -365,6 +365,64 @@ function drawCities(svg, cities, projection) {
         .attr("in", "coloredBlur");
     feMerge.append("feMergeNode")
         .attr("in", "SourceGraphic");
+    // Select all the city elements and append circle SVG elements for each city
+    const citySelection = svg.selectAll('.city')
+        .data(cities)
+        .enter().append('circle')
+        .attr('class', 'city')
+        .attr('cx', d => projection(d.coordinates)[0])
+        .attr('cy', d => projection(d.coordinates)[1])
+        .attr('r', '3')
+        .attr('fill', 'silver')
+        .style("filter", "url(#glow)");
+
+    // Add animations to city circles for a pulsating effect
+    citySelection.append("animate")
+        .attr("attributeName", "r")
+        .attr("from", 5)
+        .attr("to", 8)
+        .attr("dur", "1s")
+        .attr("repeatCount", "indefinite"); 
+
+    // Attach event handlers for mouse interaction
+    citySelection
+        .on('mouseover', function(event, d) {
+            // Show popup
+            showPopup(d, event);
+        })
+        .on('mousemove', function(event, d) {
+            // Move popup
+            movePopup(event);
+        })
+        .on('mouseout', function(event, d) {
+            // Hide popup
+            hidePopup();
+        });
+
+    console.log(`Cities drawn: ${svg.selectAll('.city').size()}`);
+}
+
+// Define the popup show function
+function showPopup(cityData, event) {
+    const popup = document.getElementById('city-popup');
+    popup.style.display = 'block';
+    popup.textContent = cityData.name; // Display the city name
+    movePopup(event);
+}
+
+// Define the popup move function
+function movePopup(event) {
+    const popup = document.getElementById('city-popup');
+    popup.style.left = `${event.pageX}px`;
+    popup.style.top = `${event.pageY}px`;
+}
+
+// Define the popup hide function
+function hidePopup() {
+    const popup = document.getElementById('city-popup');
+    popup.style.display = 'none';
+}        
+           
 
 
 
