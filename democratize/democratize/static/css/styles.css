@@ -18,7 +18,7 @@ body, html {
   white-space: nowrap;
   overflow-x: scroll;
   overflow-y: hidden;
-  /*z-index: 1000; */
+  z-index: 1000; 
   font-size: 300%; /* 300% larger font size */
   color: transparent; /* Make text transparent */
   -webkit-text-stroke: 1px #FFF; /* White text outline */
@@ -134,7 +134,7 @@ button {
 #custom-cursor {
     position: fixed;
     pointer-events: none;
-    /*z-index: 10000; /* Make sure it is on top of all other elements */
+    z-index: 1000; /* Make sure it is on top of all other elements */
     transform: translate(-50%, -50%); /* Center the text */
     transition: transform 0.1s, background 0.3s; /* Smooth transition for moving and changing */
     padding: 10px;

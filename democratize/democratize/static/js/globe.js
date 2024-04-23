@@ -311,7 +311,7 @@ function drawCities(svg, cities, projection) {
         .attr('class', 'city')
         .attr('cx', d => projection(d.coordinates)[0])
         .attr('cy', d => projection(d.coordinates)[1])
-        .attr('r', '3')
+        .attr('r', '5')
         .attr('fill', 'silver')
         .style("filter", "url(#glow)");
 
@@ -323,7 +323,7 @@ function drawCities(svg, cities, projection) {
         movePopup(event);
     }).on('mouseout', function(event, d) {
         console.log("Mouseout event on city:", d.name);
-        //hidePopup();
+        hidePopup();
     });
 
     console.log("Cities drawn and events attached:", citySelection.size());
@@ -353,19 +353,57 @@ function drawCityLabels(svg, cities, projection) {
   
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
+
+function showPopup(cityData, event) {
+    // Your existing code...
+
+ 
+
+
 function showPopup(cityData, event) {
     console.log(`showPopup called: Showing popup for ${cityData.name} at coordinates (${event.clientX}, ${event.clientY})`);
     const popup = document.getElementById('city-popup');
     console.log(`Before showing - Display: ${popup.style.display}, Opacity: ${popup.style.opacity}, Visibility: ${popup.style.visibility}`);
+
+    // Clear existing content of the popup
+    popup.innerHTML = '';
+
+    // Create an img element
+
+    // Set the source of the image to the favico.png file
+    
+
+    const baseUrl = document.body.getAttribute('data-base-url');
+
+       const image = document.createElement('img');
+    
+       // Log the base URL from the body's data attribute
+       const baseUrl = document.body.getAttribute('data-base-url');
+       console.log("Base URL for static files:", baseUrl);
+   
+       // Construct the full path and log it
+       const imagePath = baseUrl + "js/favico.png";
+       console.log("Full path for the image:", imagePath);
+   
+       image.src = imagePath;
+       image.alt = cityData.name;
+
+    //image.src = "js/favico.png"; // Replace with the path to your image
+    //image.alt = cityData.name; // A text alternative for the image
+
+    // Insert the image into the popup
+    popup.appendChild(image);
+
+    // Adjust the popup position and make it visible
     initialX = event.clientX;
     initialY = event.clientY;
     popup.style.display = 'block';
     popup.style.opacity = '1';
     popup.style.visibility = 'visible';
-    popup.textContent = cityData.name;
     popup.style.left = `${event.clientX}px`;
     popup.style.top = `${event.clientY}px`;
     console.log(`After showing - Display: ${popup.style.display}, Left: ${popup.style.left}, Top: ${popup.style.top}`);
+
 }
 
 function hidePopup() {

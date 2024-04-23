@@ -10,10 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{% static 'js/favico.png' %}" />
 </head>
-<body>
+    <body data-base-url="{% static '' %}">
+        <!-- ... other HTML content ... -->
+  
     <div id="fullpage-scroll">
     <div id="custom-cursor" class="scroll-cursor">SCROLL DOWN</div>
-    <div id="city-popup" class="popup" style="display: block; left: 50px; top: 50px; z-index: 5000;">Test Popup</div>
 
     <header>
         <nav id="horizontal-nav">
@@ -72,12 +73,16 @@
                 </defs>
             </svg>
         </div>
+
+        <svg id="wavy-border" width="100%" height="150px" xmlns="http://www.w3.org/2000/svg">
+        <path d="" fill="none" stroke="#FFF" stroke-width="2"/>
+        </svg>
         <div id="button-container">
             <button id="btn-auto-analyze">Auto-Analyze Data</button>
             <button id="btn-scan-websites">Scan Websites with Keywords</button>
             <button id="btn-scan-images">Scan Images for Text</button>
         </div>
-        <div id="city-popup" class="popup" style="display: block; left: 50px; top: 50px;">Test Popup</div>
+
 
     </main>
 
@@ -97,5 +102,7 @@
     <div id="city-popup" class="popup">
         <img src="{% static 'js/favico.png' %}" alt="Popup Image"/>
     </div>
+
+    
 </body>
 </html>
