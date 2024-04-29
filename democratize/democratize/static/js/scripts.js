@@ -1,35 +1,9 @@
-// Placeholder for initializing the globe
-function initGlobe() {
-  // Code to initialize the globe with dots and animated lines
-  // This will likely utilize a library like Globe.js or Three.js
-}
 
-// Function to animate horizontal text
-function animateHorizontalText() {
-  // Code for animating the horizontal text
-  // Use a library like GSAP or simple CSS transitions
-}
-
-// Function to handle language selection
-function switchLanguage(language) {
-  // Code to switch the text of the site to the selected language
-  // Potentially using a library or a framework for internationalization
-}
 
 // Initialize functions when the window loads
 window.onload = function() {
-  initGlobe();
-  animateHorizontalText();
+
 };
-
-// Horizontal nav scroll effect
-const nav = document.getElementById('horizontal-nav');
-
-// Adding more logs to diagnose the issue
-console.log('Initial clientWidth:', nav.clientWidth);
-console.log('Initial scrollWidth:', nav.scrollWidth);
-console.log('Initial overflowX:', getComputedStyle(nav).overflowX);
-console.log('Children total width:', Array.from(nav.children).reduce((total, child) => total + child.offsetWidth, 0));
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -64,34 +38,8 @@ document.addEventListener('mousemove', (e) => {
   cursor.style.top = e.clientY + 'px';
 });
 
-// Custom Cursor Change on Scroll
-window.addEventListener('scroll', () => {
-  const cursor = document.getElementById('custom-cursor');
-  if (window.scrollY > 50) { // Threshold of scroll for changing cursor
-      cursor.classList.remove('scroll-cursor');
-      cursor.classList.add('bullseye-cursor');
-  } else {
-      cursor.classList.add('scroll-cursor');
-      cursor.classList.remove('bullseye-cursor');
-  }
-});
-document.addEventListener('mousemove', (e) => {
-  const cursor = document.getElementById('custom-cursor');
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top = e.clientY + 'px';
-});
 
-// Custom Cursor Change on Scroll
-window.addEventListener('scroll', () => {
-  const cursor = document.getElementById('custom-cursor');
-  if (window.scrollY > 50) {
-      cursor.classList.remove('scroll-cursor');
-      cursor.classList.add('bullseye-cursor');
-  } else {
-      cursor.classList.add('scroll-cursor');
-      cursor.classList.remove('bullseye-cursor');
-  }
-});
+
 
 // Full-page horizontal scroll effect
 window.addEventListener('wheel', function(e) {
@@ -112,6 +60,9 @@ window.addEventListener('wheel', function(e) {
   console.log('Current scroll position:', nav.scrollLeft);
 }, { passive: false });
 
+
+
+/* this event listener allows the horizontal-nav to be in italics when the mouse iis being scrolled*/
 document.addEventListener('DOMContentLoaded', function() {
   const nav = document.getElementById('horizontal-nav');
   let isScrolling;
@@ -144,9 +95,14 @@ document.addEventListener('DOMContentLoaded', function() {
   nav.addEventListener('scroll', function() {
     // Change cursor and add italic style on first scroll
     if (!hasScrolled) {
+      console.log("Adding bullseye-cursor class"); // Log when adding the class
       cursor.classList.remove('scroll-cursor');
       cursor.classList.add('bullseye-cursor');
-      hasScrolled = true;
+      hasScrolled = true; // Set the flag so it doesn't change back
+      console.log("Cursor class after adding:", cursor.className); // Check the class of the cursor
+      // Additional logs to inspect the cursor element
+      console.log("Cursor element styles:", cursor.style);
+      console.log("Computed cursor background:", getComputedStyle(cursor).background);
     }
 
     // Add the 'italic-text' class on scroll
@@ -162,3 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 66); // Delay in ms
   }, false);
 });
+
+
+
+
+
+

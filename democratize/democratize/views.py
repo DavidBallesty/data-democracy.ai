@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from django.shortcuts import render
+
 def landing_page(request):
     return render(request, 'landing_page.html')
 
@@ -12,8 +14,6 @@ def scan_websites(request):
 
 def scan_images(request):
     return render(request, 'scan_images.html')
-
-
 # ... other views
 
 def get_globe_data(request):

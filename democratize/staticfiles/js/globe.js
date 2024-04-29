@@ -1,34 +1,91 @@
 
+const cityImageMap = {
+    'New York City': 'english_DDAI.png',
+    'Delhi': 'hindi_DDAI.png',       
+    'Toronto': 'english_DDAI.png',
+    'Mumbai':'hindi_DDAI.png', 
+    'Los Angeles': 'english_DDAI.png',
+    'Jakarta': 'indonesian_DDAI.png',
+    'Lima': 'spanish_DDAI.png',
+    'Nagoya': 'japanese_DDAI.png',       
+    'Rio de Janeiro': 'portugese_DDAI.png',        
+    'Washington': 'english_DDAI.png',
+    'Beijing': 'chinese_DDAI.png',            
+    'Charlotte': 'english_DDAI.png',
+    'Bangkok': 'Thai_DDAI.png',        
+    'Denver': 'english_DDAI.png',
+    'Kolkata': 'hindi_DDAI.png', 
+    'Los Angeles': 'english_DDAI.png',
+    'Manila': 'tagalog_DDAI',
+    'Moscow': 'russian_DDAI.png',
+    'Tokyo': 'japanese_DDAI.png',
+    'Amsterdam': 'dutch_DDAI.png',
+    'Singapore': 'english_DDAI.png',
+    'San Francisco': 'english_DDAI.png',        
+    'Luxembourg':'luxembourgesh_DDAI.png',
+    'Shanghai': 'chinese_DDAI.png',
+    'Munich':'german_DDAI.png',
+    'Cairo': 'arabic_DDAI.png',       
+    'Mexico City': 'spanish_DDAI.png',
+    'Hong Kong': 'chinese_DDAI.png',
+    'Bogota': 'spanish_DDAI.png',
+    'Mexico City': 'spanish_DDAI.png',
+    'Jakarta': 'indonesian_DDAI.png',
+    'Lima': 'spanish_DDAI.png',
+    'Nagoya': 'japanese_DDAI.png',        
+    'Rio de Janeiro': 'portugese_DDAI.png',
+    'Buenos Aires':'spanish_DDAI.png',
+    'Bogata':'spanish_DDAI.png',    
+    'Santiago': 'spanish_DDAI.png',
+    'London': 'english_DDAI.png',
+    'Madrid': 'spanish_DDAI.png',
+    'Melbourne': 'english_DDAI.png',
+    'Paris': 'french_DDAI.png',
+    'Tokyo': 'japanese_DDAI.png',
+    'Amsterdam': 'dutch_DDAI.png',
+    'Singapore': 'english_DDAI.png',
+    'Luxembourg': 'luxembourgesh_DDAI.png',
+    'Shanghai': 'chinese_DDAI.png',
+    'Munich': 'german_DDAI.png',
+    'Cairo': 'arabic_DDAI.png',
+    'Zurich':'german_DDAI.png',
+    'Milan': 'italian_DDAI.png',
+    'Istanbul': 'turkish_DDAI.png',
+    'Johannesburg': 'afrikaans_DDAI.png',
+    'Chennai': 'hindi_DDAI.png',         
+    'Lagos': 'english_DDAI.png',
+    'Sydney': 'english_DDAI.png',
+    'Seoul': 'korean_DDAI.png',
+    'Dublin':'english_DDAI.png',
+    'Zurich': 'german_DDAI.png',   
+    'Dubai': 'arabic_DDAI.png',
+    'Oslo': 'norwegian_DDAI.png',
+    'Manila': 'filipino_DDAI.png'
+};
 
 document.addEventListener('DOMContentLoaded', function() {
-    //console.log("DOM fully loaded and parsed");
-
-
-
     const svg = setupSVG();
     const projection = defineProjection();
     const cities = defineCities();
-    // //console.log(`Cities defined: ${cities.length}`);
 
-    ////console.log("Drawing cities");
     drawCities(svg, cities, projection); 
-    
-    ////console.log("Drawing city labels");
     drawCityLabels(svg, cities, projection);
+    animateCityLinks(svg, cities, projection); // Call to start the animation
 
-    ////console.log("Animating city links");
-    ////console.log("Animating city links proof");
-    var complete = 0;
-
-    animateCityLinks(svg, cities, projection, complete); // Call to start the animation
-    //console.log("complete = " + complete + "<");
-
+    // Adding event listener on body for mousemove to ensure popups hide when the mouse is not over a city
+    document.body.addEventListener('mousemove', function(event) {
+        if (!event.target.classList.contains('city')) {
+            hideAllPopups();
+        }
+    });
 });
+
 
 
 
 // Rest of the globe.js code...
 function setupSVG() {
+    console.log("Setting up SVG");    
     const svg = d3.select('#globe-container').append('svg')
         .attr('width', '100%')
         .attr('height', '100%')
@@ -40,25 +97,42 @@ function setupSVG() {
     const defs = svg.append('defs');
 
     // Define a glow filter with a Gaussian blur and color matrix operations
+    console.log("Defining glow filter");
     const glowFilter = defs.append('filter')
-        .attr('id', 'glow')
-        .attr('x', '-50%')
-        .attr('y', '-50%')
-        .attr('width', '200%')
-        .attr('height', '200%');
-    glowFilter.append('feGaussianBlur')
-        .attr('in', 'SourceGraphic')
-        .attr('stdDeviation', '2')
-        .attr('result', 'blur');
-    glowFilter.append('feColorMatrix')
-        .attr('in', 'blur')
-        .attr('type', 'matrix')
-        .attr('values', '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10')
-        .attr('result', 'glowColorMatrix');
-    glowFilter.append('feComposite')
-        .attr('in', 'SourceGraphic')
-        .attr('in2', 'glowColorMatrix')
-        .attr('operator', 'over');
+        .attr('id', 'glow-filter')
+        .attr('width', '300%')
+        .attr('height', '300%')
+        .attr('x', '-100%')
+        .attr('y', '-100%');
+
+    console.log("Glow filter defined:", glowFilter);
+
+    const feGaussianBlur = glowFilter.append('feGaussianBlur')
+    .attr('class', 'blur-value')
+    .attr('stdDeviation', 2.5)
+    .attr('result', 'coloredBlur');
+
+    // Create an animate element to change the stdDeviation attribute over time
+    feGaussianBlur.append('animate')
+    .attr('attributeName', 'stdDeviation')
+    .attr('values', '2.5; 10; 2.5') // Pulsate between the values 2.5 and 5
+    .attr('dur', '2s') // Duration of the animation
+    .attr('repeatCount', 'indefinite'); // Repeat the animation indefinitely
+
+    const componentTransfer = glowFilter.append('feComponentTransfer')
+    .attr('result', 'boostedGlow');
+    componentTransfer.append('feFuncA')
+    .attr('type', 'linear')
+    .attr('slope', '2')  // Increase the slope to boost the alpha channel
+    .attr('intercept', '0');  // Adjust if needed to modify overall transparency
+
+
+    const feMerge = glowFilter.append('feMerge');
+    feMerge.append('feMergeNode')
+        .attr('in', 'boostedGlow');
+    feMerge.append('feMergeNode')
+        .attr('in', 'SourceGraphic');
+    console.log("feMerge Glow filter appended:", glowFilter); 
 
     // Define a linear gradient for the fire-like effect
 const fireGradient = defs.append('linearGradient')
@@ -76,10 +150,11 @@ fireGradient.append('stop')
     .attr('offset', '100%')
     .attr('stop-color', '#b22222') // Dark red
     .attr('stop-opacity', '1');    // Full opacity for end of gradient
-
+    console.log("SVG Defs block created:", defs);
 
     return svg;
 }
+
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -146,11 +221,10 @@ function startAnimationForCityPair(svg, currentCity, nextCity, projection, durat
     path.style("stroke-dasharray", `${totalLength} ${totalLength}`)
         .style("stroke-dashoffset", totalLength);
 
-    // Create the moving dot with a glow effect
+
     const movingDot = svg.append("circle")
         .attr("r", 5)
-        .attr("fill", "black")
-        .style("filter", "url(#glow)")
+        .attr("fill", "blue")
         .attr("transform", `translate(${start[0]}, ${start[1]})`);
 
     //console.log(`Starting dot animation from ${currentCity.name} to ${nextCity.name}`);
@@ -208,7 +282,7 @@ function defineCities() {
         { name: 'Toronto', coordinates: [-79.3832, 43.6532] },
         { name: 'Mumbai', coordinates: [51.8777, 23.0760] },
         { name: 'Los Angeles', coordinates: [-113.2437, 36.0522] },
-       { name: 'Jakarta', coordinates: [82.8650, -0.5] },
+        { name: 'Jakarta', coordinates: [82.8650, -0.5] },
         { name: 'Lima', coordinates: [-81.0428, -5.0464] },
         { name: 'Nagoya', coordinates: [107.9066, 35.1815] },        
         { name: 'Rio de Janeiro', coordinates: [-53.1729, -18.9068] },        
@@ -229,7 +303,8 @@ function defineCities() {
         { name: 'Luxembourg', coordinates: [-7.1296, 48.8153] },
         { name: 'Shanghai', coordinates: [96.4737, 32.2304] },
         { name: 'Munich', coordinates: [0, 47.1351] },
-        { name: 'Cairo', coordinates: [14.2357, 32.0444] },       { name: 'Mexico City', coordinates: [-101.1332, 21.4326] },
+        { name: 'Cairo', coordinates: [14.2357, 32.0444] },       
+        { name: 'Mexico City', coordinates: [-101.1332, 21.4326] },
         { name: 'Hong Kong', coordinates: [89.2644, 26.1291] },
         { name: 'Bogotá', coordinates: [-76.0721, 8.5110] },
         { name: 'Jakarta', coordinates: [82.8650, -0.5] },
@@ -262,13 +337,6 @@ function defineCities() {
         { name: 'Dubai', coordinates: [37.2708, 28.2048] },
         { name: 'Oslo', coordinates: [-2.7522, 57.9139] },
 
-
-
-
-
-
-
-
         // Add more cities as needed
     ];
 }
@@ -280,7 +348,9 @@ function createCityLinks(cities) {
         links.push({
             source: cities[i].coordinates,
             target: cities[i + 1].coordinates
+            
         });
+
     }
     return links;
 }
@@ -313,7 +383,9 @@ function drawCities(svg, cities, projection) {
         .attr('cy', d => projection(d.coordinates)[1])
         .attr('r', '5')
         .attr('fill', 'silver')
-        .style("filter", "url(#glow)");
+        .style('filter', 'url(#glow-filter)') // Apply the glow filter here        
+        //.style('z-index', '3000')
+        .style('pointer-events', 'all');
 
     citySelection.on('mouseover', function(event, d) {
         console.log("Mouseover event on city:", d.name);
@@ -324,9 +396,31 @@ function drawCities(svg, cities, projection) {
     }).on('mouseout', function(event, d) {
         console.log("Mouseout event on city:", d.name);
         hidePopup();
+        
     });
+    citySelection.on('click', cityClickHandler);
+    citySelection.each(function(d, i) {
+        console.log(`City drawn: ${d.name} at coordinates: ${projection(d.coordinates)}`);
+    });
+    console.log("Filter applied to city circles");
 
     console.log("Cities drawn and events attached:", citySelection.size());
+
+    citySelection.attr('class', 'city')
+    .each(function(d) {
+        const appliedFilter = d3.select(this).style('filter');
+        console.log(`Filter on city ${d.name}:`, appliedFilter);
+    });
+    citySelection.attr('class', 'city')
+    .each(function(d) {
+        const coords = projection(d.coordinates);
+        console.log(`City ${d.name} projected at:`, coords);
+    });
+    console.log("All cities have been drawn and styled with the glow filter.");
+
+    window.addEventListener('error', function(event) {
+        console.error('Error caught:', event.error);    
+});
 }
 
 
@@ -350,32 +444,38 @@ function drawCityLabels(svg, cities, projection) {
 
   /*start of new code */
 
-  
 let initialX, initialY; // Variables to hold the initial position of the cursor when the popup is shown
 
+
 function showPopup(cityData, event) {
-    console.log(`showPopup called: Showing popup for ${cityData.name} at coordinates (${event.clientX}, ${event.clientY})`);
-    const popup = document.getElementById('city-popup');
-    console.log(`Before showing - Display: ${popup.style.display}, Opacity: ${popup.style.opacity}, Visibility: ${popup.style.visibility}`);
+    console.log('Before showing - Display: ${popup.style.display}');
 
     // Clear existing content of the popup
     popup.innerHTML = '';
 
     // Create an img element
+    let image = document.createElement('img');
 
-    // Set the source of the image to the favico.png file
-    
+    // Get the base URL from the body's data attribute
+    let baseUrl = document.body.getAttribute('data-base-url');
 
-    const baseUrl = document.body.getAttribute('data-base-url');
+    // Use the cityImageMap to find the corresponding image file
+    let png_for_city = cityImageMap[cityData.name] || 'favico.png'; // Use a default image if the city is not found
 
-    const image = document.createElement('img');
-    image.src = "democratize/democratize/static/js/favico.png";
-    
+    // Construct the full path for the image
+    let imagePath = baseUrl  + png_for_city;
 
-    //image.src = "js/favico.png"; // Replace with the path to your image
-    //image.alt = cityData.name; // A text alternative for the image
+    // Set the source of the image to the constructed path
+    image.src = imagePath;
+    // Set the image to scale down by 50%
+    image.style.transform = 'scale(0.8)';
+    image.style.transformOrigin = 'top left'; // This ensures the scaling doesn't displace the popup
 
-    // Insert the image into the popup
+    // Log the base URL from the body's data attribute
+    console.log("Base URL for static files:", baseUrl);
+    console.log("Full path for the image:", imagePath);
+
+    // Add image to popup
     popup.appendChild(image);
 
     // Adjust the popup position and make it visible
@@ -386,10 +486,16 @@ function showPopup(cityData, event) {
     popup.style.visibility = 'visible';
     popup.style.left = `${event.clientX}px`;
     popup.style.top = `${event.clientY}px`;
+    // Adjust the popup position and make it visible
+    popup.style.left = `${event.pageX}px`;
+    popup.style.top = `${event.pageY}px`;
+
+    // Scale down the entire popup by 50%
+    popup.style.transform = 'scale(0.8)';
+    popup.style.transformOrigin = 'top left';    
     console.log(`After showing - Display: ${popup.style.display}, Left: ${popup.style.left}, Top: ${popup.style.top}`);
 
 }
-
 function hidePopup() {
     const popup = document.getElementById('city-popup');
     console.log(`hidePopup called: Hiding popup, current status - Display: ${popup.style.display}`);
@@ -400,14 +506,27 @@ function hidePopup() {
 }
 function movePopup(event) {
     const popup = document.getElementById('city-popup');
+    if (!popup) {
+        console.error('Popup element not found!');
+        return; // Exit if the popup isn't found
+    }
+
+    // Log the initial and event coordinates
+    console.log(`Initial coordinates: (${initialX}, ${initialY})`);
+    console.log(`Event coordinates: (${event.clientX}, ${event.clientY})`);
+
     let dx = event.clientX - initialX;
     let dy = event.clientY - initialY;
+    console.log(`Deltas: (dx: ${dx}, dy: ${dy})`); // Log the deltas
+
     let distance = Math.sqrt(dx * dx + dy * dy);
-    console.log(`movePopup called: DX=${dx}, DY=${dy}, Distance=${distance}`);
-    if (distance < 300) {  // Consider increasing this threshold for testing
+    console.log(`Distance: ${distance}`); // Log the distance
+
+    if (distance < 800) {
+        // If the distance is less than 800, reposition the popup
         popup.style.left = `${event.clientX}px`;
         popup.style.top = `${event.clientY}px`;
-        console.log(`Popup moved to (${event.clientX}, ${event.clientY})`);
+        console.log(`Popup repositioned to (${popup.style.left}, ${popup.style.top})`);
     } else {
         console.log("Distance threshold exceeded, hiding popup");
         hidePopup();
@@ -415,13 +534,52 @@ function movePopup(event) {
 }
 
 
+function positionWaterEffect(effectDiv, popup, dx, dy) {
+    const waterEffectElement = document.getElementById('water-effect-element-id'); // replace with your actual ID
+    if (!waterEffectElement) {
+        console.error('Water effect element not found!');
+        return; // Exit the function if the water effect element is not found
+    }    
+    // Example positioning logic - this will need to be refined based on your exact effect and popup dimensions
+    effectDiv.style.width = '100%'; // Cover the full width of the popup
+    effectDiv.style.height = '20px'; // The height of the watery edge
+    effectDiv.style.position = 'absolute';
+    function positionWaterEffect(popup, dx, dy) {
+    const waterEffectElement = document.getElementById('water-effect-element-id'); // replace with your actual ID
+    if (!waterEffectElement) {
+        console.error('Water effect element not found!');
+        return; // Exit the function if the water effect element is not found
+    }
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal movement
+        effectDiv.style.top = dy < 0 ? '0' : '100%'; // Moving up or down
+        effectDiv.style.left = '0';
+    } else {
+        // Vertical movement
+        effectDiv.style.left = dx < 0 ? '0' : '100%'; // Moving left or right
+        effectDiv.style.top = '0';
+        effectDiv.style.width = '20px'; // Change to a vertical bar
+        effectDiv.style.height = '100%'; // Cover the full height
+    }
 
-function calculateDistance(x, y, initialX, initialY) {
-    const dx = x - initialX;
-    const dy = y - initialY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    console.log("DX:", dx, "DY:", dy, "Distance:", distance);
-    return distance;
+    // Apply the CSS class with the ripple animation
+    effectDiv.className = 'water-ripple-effect';
 }
 
+}
+function cityClickHandler(event) {
+    event.stopPropagation(); // This prevents the click from "bubbling up" to parent elements.
+    // Your code to handle city click...
+}
 
+function hideAllPopups() {
+    const popups = document.querySelectorAll('.popup');
+    popups.forEach(popup => {
+        if (popup.style.display === 'block') {
+            popup.style.display = 'none';
+            popup.style.opacity = '0';
+            popup.style.visibility = 'hidden';
+        }
+    });
+}
+  
